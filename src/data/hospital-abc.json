@@ -1,0 +1,135 @@
+{
+  "brandId": "hospital-abc",
+  "brandName": "Hospital ABC",
+  "users": [
+    {
+      "id": "abc-user-1",
+      "nombre": "Juan Pérez",
+      "email": "juan@hospital-abc.com",
+      "password": "$2a$10$X7SZv0wDRu0F0K5eqd.j3.0gRj8ZyJvl6UQh6VT3UzRnJz/hq5RLm",
+      "role": "admin",
+      "brandId": "hospital-abc"
+    },
+    {
+      "id": "abc-user-2",
+      "nombre": "María Gómez",
+      "email": "maria@hospital-abc.com",
+      "password": "$2a$10$X7SZv0wDRu0F0K5eqd.j3.0gRj8ZyJvl6UQh6VT3UzRnJz/hq5RLm",
+      "role": "recepcionista",
+      "brandId": "hospital-abc"
+    },
+    {
+      "id": "abc-user-3",
+      "nombre": "Roberto Díaz",
+      "email": "roberto@hospital-abc.com",
+      "password": "$2a$10$X7SZv0wDRu0F0K5eqd.j3.0gRj8ZyJvl6UQh6VT3UzRnJz/hq5RLm",
+      "role": "paciente",
+      "brandId": "hospital-abc"
+    },
+    {
+      "id": "abc-user-4",
+      "nombre": "Dr. Carlos López",
+      "email": "carlos@hospital-abc.com",
+      "password": "$2a$10$X7SZv0wDRu0F0K5eqd.j3.0gRj8ZyJvl6UQh6VT3UzRnJz/hq5RLm",
+      "role": "especialista",
+      "codigoDoctor": "w8eejdd",
+      "brandId": "hospital-abc"
+    },
+    {
+      "id": "abc-user-5",
+      "nombre": "Dra. Laura Sánchez",
+      "email": "laura@hospital-abc.com",
+      "password": "$2a$10$X7SZv0wDRu0F0K5eqd.j3.0gRj8ZyJvl6UQh6VT3UzRnJz/hq5RLm",
+      "role": "especialista",
+      "codigoDoctor": "w8eejdd",
+      "brandId": "hospital-abc"
+    }
+  ],
+  "areas": [
+    {
+      "id": "abc-area-1",
+      "nombre": "Cardiología",
+      "brandId": "hospital-abc",
+      "especialistaIds": ["abc-spec-1"]
+    },
+    {
+      "id": "abc-area-2",
+      "nombre": "Pediatría",
+      "brandId": "hospital-abc",
+      "especialistaIds": ["abc-spec-2"]
+    },
+    {
+      "id": "abc-area-3",
+      "nombre": "Neurología",
+      "brandId": "hospital-abc",
+      "especialistaIds": ["abc-spec-3"]
+    }
+  ],
+  "especialistas": [
+    {
+      "id": "abc-spec-1",
+      "nombre": "Dr. Carlos López",
+      "codigoDoctor": "ABC-001",
+      "areaId": "abc-area-1",
+      "userId": "abc-user-4",
+      "brandId": "hospital-abc"
+    },
+    {
+      "id": "abc-spec-2",
+      "nombre": "Dra. Laura Sánchez",
+      "codigoDoctor": "ABC-002",
+      "areaId": "abc-area-2",
+      "userId": "abc-user-5",
+      "brandId": "hospital-abc"
+    },
+    {
+      "id": "abc-spec-3",
+      "nombre": "Dr. José Rodríguez",
+      "codigoDoctor": "ABC-003",
+      "areaId": "abc-area-3",
+      "userId": null,
+      "brandId": "hospital-abc"
+    }
+  ],
+  "citas": [
+    {
+      "id": "abc-cita-1",
+      "pacienteId": "abc-user-3",
+      "especialistaId": "abc-spec-1",
+      "areaId": "abc-area-1",
+      "fecha": "2025-05-10T10:00:00.000Z",
+      "estado": "agendada",
+      "brandId": "hospital-abc"
+    },
+    {
+      "id": "abc-cita-2",
+      "pacienteId": "abc-user-3",
+      "especialistaId": "abc-spec-2",
+      "areaId": "abc-area-2",
+      "fecha": "2025-05-05T14:30:00.000Z",
+      "estado": "completa",
+      "brandId": "hospital-abc"
+    },
+    {
+      "id": "abc-cita-3",
+      "pacienteId": "abc-user-3",
+      "especialistaId": "abc-spec-3",
+      "areaId": "abc-area-3",
+      "fecha": "2025-05-15T09:00:00.000Z",
+      "estado": "pendiente",
+      "brandId": "hospital-abc"
+    }
+  ],
+  "historial": [
+    {
+      "id": "abc-hist-1",
+      "pacienteId": "abc-user-3",
+      "especialistaId": "abc-spec-2",
+      "citaId": "abc-cita-2",
+      "diagnostico": "Fiebre común, reposo y medicación",
+      "notas": "Paciente presenta fiebre de 38°C. Se recomienda paracetamol cada 8 horas y reposo.",
+      "fecha": "2025-05-05T15:30:00.000Z",
+      "brandId": "hospital-abc"
+    }
+  ]
+}

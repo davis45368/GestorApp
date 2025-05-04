@@ -1,0 +1,103 @@
+{
+  "brandId": "clinica-xyz",
+  "brandName": "Clínica XYZ",
+  "users": [
+    {
+      "id": "xyz-user-1",
+      "nombre": "Pedro Martínez",
+      "email": "pedro@clinica-xyz.com",
+      "password": "$2a$10$X7SZv0wDRu0F0K5eqd.j3.0gRj8ZyJvl6UQh6VT3UzRnJz/hq5RLm",
+      "role": "admin",
+      "brandId": "clinica-xyz"
+    },
+    {
+      "id": "xyz-user-2",
+      "nombre": "Ana Torres",
+      "email": "ana@clinica-xyz.com",
+      "password": "$2a$10$X7SZv0wDRu0F0K5eqd.j3.0gRj8ZyJvl6UQh6VT3UzRnJz/hq5RLm",
+      "role": "recepcionista",
+      "brandId": "clinica-xyz"
+    },
+    {
+      "id": "xyz-user-3",
+      "nombre": "Sofía Ramírez",
+      "email": "sofia@gmail.com",
+      "password": "$2a$10$X7SZv0wDRu0F0K5eqd.j3.0gRj8ZyJvl6UQh6VT3UzRnJz/hq5RLm",
+      "role": "paciente",
+      "brandId": "clinica-xyz"
+    },
+    {
+      "id": "xyz-user-4",
+      "nombre": "Dr. Miguel Fernández",
+      "email": "miguel@clinica-xyz.com",
+      "password": "$2a$10$X7SZv0wDRu0F0K5eqd.j3.0gRj8ZyJvl6UQh6VT3UzRnJz/hq5RLm",
+      "role": "especialista",
+      "codigoDoctor": "w8eejdd",
+      "brandId": "clinica-xyz"
+    }
+  ],
+  "areas": [
+    {
+      "id": "xyz-area-1",
+      "nombre": "Odontología",
+      "brandId": "clinica-xyz-1",
+      "especialistaIds": ["xyz-spec-1"]
+    },
+    {
+      "id": "xyz-area-2",
+      "nombre": "Oftalmología",
+      "brandId": "clinica-xyz-2",
+      "especialistaIds": ["xyz-spec-2"]
+    }
+  ],
+  "especialistas": [
+    {
+      "id": "xyz-spec-1",
+      "nombre": "Dr. Miguel Fernández",
+      "codigoDoctor": "XYZ-001",
+      "areaId": "xyz-area-1",
+      "userId": "xyz-user-4",
+      "brandId": "clinica-xyz"
+    },
+    {
+      "id": "xyz-spec-2",
+      "nombre": "Dra. Carmen García",
+      "codigoDoctor": "XYZ-002",
+      "areaId": "xyz-area-2",
+      "userId": null,
+      "brandId": "clinica-xyz"
+    }
+  ],
+  "citas": [
+    {
+      "id": "xyz-cita-1",
+      "pacienteId": "xyz-user-3",
+      "especialistaId": "xyz-spec-1",
+      "areaId": "xyz-area-1",
+      "fecha": "2025-05-12T11:00:00.000Z",
+      "estado": "agendada",
+      "brandId": "clinica-xyz"
+    },
+    {
+      "id": "xyz-cita-2",
+      "pacienteId": "xyz-user-3",
+      "especialistaId": "xyz-spec-2",
+      "areaId": "xyz-area-2",
+      "fecha": "2025-05-20T16:00:00.000Z",
+      "estado": "pendiente",
+      "brandId": "clinica-xyz"
+    }
+  ],
+  "historial": [
+    {
+      "id": "xyz-hist-1",
+      "pacienteId": "xyz-user-3",
+      "especialistaId": "xyz-spec-1",
+      "citaId": null,
+      "diagnostico": "Caries en molar inferior derecho",
+      "notas": "Se realizó limpieza dental y se programó tratamiento de conducto para la próxima visita.",
+      "fecha": "2025-03-15T15:30:00.000Z",
+      "brandId": "clinica-xyz"
+    }
+  ]
+}
