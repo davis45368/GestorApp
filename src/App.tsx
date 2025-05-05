@@ -147,7 +147,7 @@ return (
 			</Route>
 
 			<Route element={<AuthLayout />}>
-				<Route path={PATHS.LOGIN} element={<LoginView />} />
+				<Route index path={PATHS.LOGIN} element={<LoginView />} />
 				<Route path={PATHS.REGISTER} element={<RegisterView />} />
 				<Route path={PATHS.CHANGE_PASSWORD} element={<ChangePasswordView />} />
 			</Route>
