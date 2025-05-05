@@ -34,7 +34,6 @@ export const useAppointments = () => {
     if (user.role === "especialista") {
       // Aquí debemos obtener el ID del especialista a partir del userId
       // En un caso real, esto podría requerir una consulta adicional
-      const userStore = useUserStore.getState()
       const brandStore = useBrandStore.getState()
       const currentBrand = brandStore.currentBrand
 

@@ -10,6 +10,7 @@ import { useMedicalRecords } from "../../../hooks/useMedicalRecords"
 import { PATHS } from "../../../paths"
 import StatusBadge from "../../Components/StatusBadge"
 import dayjs from "dayjs"
+import { Area, Specialist, User } from "@/types"
 
 const { Title, Text } = Typography
 const { TextArea } = Input
@@ -19,7 +20,7 @@ const AppointmentDetailView = () => {
   const navigate = useNavigate()
   const { getAppointmentById, changeAppointmentStatus, loading: appointmentLoading } = useAppointments()
   const { user } = useUserStore()
-  const { currentBrand } = useBrandStore()
+  const { currentBrand, brands } = useBrandStore()
   const {
     getMedicalRecordByPatientId,
     createMedicalRecord,
@@ -45,14 +46,21 @@ const AppointmentDetailView = () => {
         setAppointment(appointmentData)
 
         // Buscar paciente
-        const patientData = currentBrand.users.find((user) => user.id === appointmentData.pacienteId)
+        let patientDataAll: User[] = []
+        brands.map(item => patientDataAll.push(...item.users))
+        console.log(patientDataAll)
+        const patientData = patientDataAll.find((user) => user.id === appointmentData.pacienteId)
         setPatient(patientData)
 
-        // Buscar especialista
-        const specialistData = currentBrand.especialistas.find((spec) => spec.id === appointmentData.especialistaId)
+        // Buscar 
+        let specialistDataAll: Specialist[] = []
+        brands.map(item => specialistDataAll.push(...item.especialistas))
+        const specialistData = specialistDataAll.find((spec) => spec.id === appointmentData.especialistaId)
         setSpecialist(specialistData)
 
         // Buscar área
+        let areaDataAll: Area[] = []
+        brands.map(item => areaDataAll.push(...item.areas))
         const areaData = currentBrand.areas.find((area) => area.id === appointmentData.areaId)
         setArea(areaData)
 

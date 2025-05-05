@@ -148,6 +148,8 @@ const AppointmentsListView = () => {
       })
     : appointments
 
+    const selectSpan = user?.role != 'especialista' ? 5 : 6
+
   return (
     <div>
       <div className="page-header">
@@ -172,7 +174,7 @@ const AppointmentsListView = () => {
 
       {/* Filtros */}
       <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col span={12}>
+        <Col span={user?.role != 'especialista' ? 9 : 12}>
           <Input
             placeholder="Buscar por especialista o área"
             prefix={<SearchOutlined />}
@@ -180,7 +182,7 @@ const AppointmentsListView = () => {
             onChange={(e) => setSearchText(e.target.value)}
           />
         </Col>
-        <Col span={6}>
+        <Col span={selectSpan}>
           <Select
             placeholder="Filtrar por estado"
             style={{ width: "100%" }}
@@ -194,7 +196,7 @@ const AppointmentsListView = () => {
             <Option value="cancelada">Cancelada</Option>
           </Select>
         </Col>
-        <Col span={6}>
+        <Col span={selectSpan}>
           <Select
             placeholder="Filtrar por área"
             style={{ width: "100%" }}
@@ -210,7 +212,7 @@ const AppointmentsListView = () => {
           </Select>
         </Col>
         {user?.role != 'especialista' &&          
-          <Col span={6}>
+          <Col span={selectSpan}>
             <Select
               placeholder="Filtrar por especialista"
               style={{ width: "100%" }}

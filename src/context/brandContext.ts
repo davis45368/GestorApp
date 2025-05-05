@@ -24,7 +24,7 @@ export const useBrandStore = create<BrandStoreState>()(
           // Cargar datos de las marcas
           const brands = [hospitalABC as unknown as Brand, clinicaXYZ as unknown as Brand]
           set({
-            brands,
+            brands: get().brands.length ? get().brands : brands as Brand[],
             loading: false,
             // Si no hay marca actual, establecer la primera
             currentBrand: get().currentBrand || brands[0],
