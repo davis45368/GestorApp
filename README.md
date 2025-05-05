@@ -21,7 +21,14 @@
 
 ## 🧐 Acerca del Proyecto
 
-Describe qué hace tu proyecto, a quién está dirigido y por qué es útil.  
+Describe qué hace tu proyecto, a quién está dirigido y por qué es útil. 
+
+## Link Video de presentación del prototipo
+> https://drive.google.com/file/d/1DWGM7OQwpMHulF3Ql8i9TvLlxPq08zMK/view?usp=sharing 
+
+
+## Link de acceso prototipo desplegado
+> https://gestor-app-seven.vercel.app 
 
 > **Ejemplo:**  
 > Este repositorio provee una librería para analizar datos meteorológicos en tiempo real, facilitando la integración con APIs populares y ofreciendo visualizaciones interactivas. :contentReference[oaicite:8]{index=8}
