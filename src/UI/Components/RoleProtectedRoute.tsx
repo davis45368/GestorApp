@@ -24,7 +24,7 @@ const RoleProtectedRoute = ({ children, allowedRoles }: RoleProtectedRouteProps)
 		void refreshAccessToken()
 	}
 
-	if (!allowedRoles.includes(userRole.role.name as Role)) {
+	if (!allowedRoles.includes(userRole.role.name.toLocaleLowerCase() as Role)) {
 		// Redirigir según el rol
 		if (userRole.role.name.includes("paciente")) {
 			return <Navigate to={PATHS.APPOINTMENTS} replace />

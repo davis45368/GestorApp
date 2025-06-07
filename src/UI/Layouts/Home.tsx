@@ -11,8 +11,7 @@ const Home: FC = () => {
     const navigate = useNavigate()
     const { userId } = useUserJWTStore(state => state)
     const { setUser, user } = useUserDataStore(state => state)
-    const { isLoading, roles, userRole } = useRoles(userId)
-
+    const { isLoading, userRole } = useRoles(userId)
 
     const { isLoading: isLoadingUser, isError, user: userModel } = getUserById(userId)
 
@@ -24,9 +23,9 @@ const Home: FC = () => {
         return <Spin fullscreen spinning tip={'Cargando configuración...'} />
     }
 
-    if (!isLoadingUser && !! userModel) setUser(userModel.user)
-    if (roles.length && !isLoading && !!user) {
-        if (userRole?.role.name?.includes('paciente')) {
+    if (!isLoadingUser && !!userModel && !user) setUser(userModel.user)
+    if (!isLoading && !!user) {
+        if (userRole?.role.name.toLocaleLowerCase()?.includes('paciente')) {
             navigate(`${PATHS.APPOINTMENTS}`, { replace: true })
         } else {
             navigate(`${PATHS.DASHBOARD}`, { replace: true })
