@@ -1,119 +1,107 @@
 "use client"
 
-import { Form, Input, Button, Card, Typography, Alert, Select, Image } from "antd"
+import { Form, Input, Button, Card, Typography, Alert, Image } from "antd"
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { useUserStore } from "../../../context/userContext"
-import { useBrandStore } from "../../../context/brandContext"
 import { PATHS } from "../../../paths"
 import logo from "../../../../assets/GestorAppLogo.png"
+import { User } from "@/types"
+import { registerUser } from "@/querys/user"
+import { login } from "@/querys/auth"
+import useUserJWTStore from "@/context/UserDataJWTStore"
+import { handleErrorMutation } from "@/utils/handleError"
+import { useFormValidation } from "@/hooks/useFormValidation"
 
 const { Title } = Typography
-const { Option } = Select
 
 const RegisterView = () => {
-  const { register, loading, error } = useUserStore()
-  const { brands } = useBrandStore()
-  const navigate = useNavigate()
-  const [form] = Form.useForm()
-  const [localError, setLocalError] = useState<string | null>(null)
+	const navigate = useNavigate()
+	const [form] = Form.useForm()
+	const [localError, setLocalError] = useState<string | null>(null)
+	const setJwt = useUserJWTStore(state => state.setJwt)
 
-  const onFinish = async (values: {
-    nombre: string
-    email: string
-    password: string
-    confirmPassword: string
-    brandId: string
-  }) => {
-    setLocalError(null)
+	const { confirmPasswordRules, passwordRules } = useFormValidation()
 
-    if (values.password !== values.confirmPassword) {
-      setLocalError("Las contraseñas no coinciden")
-      return
-    }
+	const registerUserMutation = registerUser()
+	const loginMutation = login()
 
-    try {
-      const user = await register({
-        nombre: values.nombre,
-        email: values.email,
-        password: values.password,
-        brandId: values.brandId,
-      })
+	const onFinish = (values: Pick<User, "email" | "password" | "firstName" | "lastName">) => {
+		registerUserMutation.mutate({ email: values.email, firstName: values.firstName, lastName: values.lastName, password: values.password }, {
+			onSuccess: () => {
+				loginMutation.mutate({ password: values.password, email: values.email }, {
+					onSuccess: (data) => {
+						const response = data.data
+						setJwt(response)
+						navigate(PATHS.LOADING_DATA)
+					},
+					onError: (error) => {
+						const messageError = handleErrorMutation(error, 'Ocurrió un al crear el usuario')
+						setLocalError(messageError)
+					}
+				})
+			},
+			onError: (error) => {
+				const messageError = handleErrorMutation(error, 'Ocurrió un error al iniciar sección')
+				setLocalError(messageError)
+			}
+		})
+	}
 
-      if (user) {
-        navigate(PATHS.APPOINTMENTS)
-      } else {
-        setLocalError("Error al registrar usuario")
-      }
-    } catch (error) {
-      setLocalError("Error al registrar usuario")
-    }
-  }
 
-  return (
-      <Card style={{ width: '25vw' }}>
-        <Image style={{ marginBottom: '-80px', marginTop: '-60px', marginLeft: '5vw' }} preview={false} src={logo} width={'190px'} />
+	return (
+		<Card style={{ width: '25vw' }}>
+			<Image style={{ marginBottom: '-80px', marginTop: '-60px', marginLeft: '5vw' }} preview={false} src={logo} width={'190px'} />
 
-        <Title level={2} className="auth-title">
-          Registro de Paciente
-        </Title>
+			<Title level={2} className="auth-title">
+				Registro de Paciente
+			</Title>
 
-        {(error || localError) && (
-          <Alert description={error || localError} type="error" showIcon style={{ marginBottom: 16, padding: 5 }} />
-        )}
+			{(localError) && (
+				<Alert description={localError} type="error" showIcon style={{ marginBottom: 16, padding: 5 }} />
+			)}
 
-        <Form form={form} name="register" onFinish={onFinish} layout="vertical">
-          <Form.Item name="nombre" rules={[{ required: true, message: "Por favor ingresa tu nombre completo" }]}>
-            <Input prefix={<UserOutlined />} placeholder="Nombre completo" />
-          </Form.Item>
+			<Form form={form} name="register" onFinish={onFinish} layout="vertical">
+				<Form.Item name="firstName" rules={[{ required: true, message: "Por favor ingresa sus nombres completo" }]}>
+					<Input prefix={<UserOutlined />} placeholder="Nombres" />
+				</Form.Item>
+				<Form.Item name="lastName" rules={[{ required: true, message: "Por favor ingresa sus apellidos completo" }]}>
+					<Input prefix={<UserOutlined />} placeholder="Apellidos" />
+				</Form.Item>
 
-          <Form.Item
-            name="email"
-            rules={[
-              { required: true, message: "Por favor ingresa tu email" },
-              { type: "email", message: "Email no válido" },
-            ]}
-          >
-            <Input prefix={<MailOutlined />} placeholder="Email" />
-          </Form.Item>
+				<Form.Item
+					name="email"
+					rules={[
+						{ required: true, message: "Por favor ingresa tu email" },
+						{ type: "email", message: "Email no válido" },
+					]}
+				>
+					<Input prefix={<MailOutlined />} placeholder="Email" />
+				</Form.Item>
 
-          <Form.Item
-            name="password"
-            rules={[
-              { required: true, message: "Por favor ingresa tu contraseña" },
-              { min: 6, message: "La contraseña debe tener al menos 6 caracteres" },
-            ]}
-          >
-            <Input.Password prefix={<LockOutlined />} placeholder="Contraseña" />
-          </Form.Item>
+				<Form.Item
+					name="password"
+					rules={passwordRules}
+				>
+					<Input.Password prefix={<LockOutlined />} placeholder="Contraseña" />
+				</Form.Item>
 
-          <Form.Item name="confirmPassword" rules={[{ required: true, message: "Por favor confirma tu contraseña" }]}>
-            <Input.Password prefix={<LockOutlined />} placeholder="Confirmar contraseña" />
-          </Form.Item>
+				<Form.Item name="confirmPassword" rules={confirmPasswordRules('password')}>
+					<Input.Password prefix={<LockOutlined />} placeholder="Confirmar contraseña" />
+				</Form.Item>
 
-          <Form.Item name="brandId" rules={[{ required: true, message: "Por favor selecciona un hospital/clínica" }]}>
-            <Select placeholder="Selecciona un hospital/clínica">
-              {brands.map((brand) => (
-                <Option key={brand.brandId} value={brand.brandId}>
-                  {brand.brandName}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
+				<Form.Item>
+					<Button type="primary" htmlType="submit" loading={false} className="auth-form-button">
+						Registrarme
+					</Button>
+				</Form.Item>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading} className="auth-form-button">
-              Registrarme
-            </Button>
-          </Form.Item>
-
-          <div style={{ textAlign: "center", marginTop: 16 }}>
-            <Link to={PATHS.LOGIN}>Ya tengo una cuenta</Link>
-          </div>
-        </Form>
-      </Card>
-  )
+				<div style={{ textAlign: "center", marginTop: 16 }}>
+					<Link to={PATHS.LOGIN}>Ya tengo una cuenta</Link>
+				</div>
+			</Form>
+		</Card>
+	)
 }
 
 export default RegisterView

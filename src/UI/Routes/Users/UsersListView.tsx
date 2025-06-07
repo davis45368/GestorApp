@@ -1,67 +1,69 @@
 "use client"
 import { useState } from "react"
-import { Table, Button, Input, Select, Typography, Space, Row, Col, Tag, Modal, message, Tooltip } from "antd"
-import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons"
+import { Table, Button, Input, Select, Typography, Space, Row, Col, Tag, App, Tooltip, Modal } from "antd"
+import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons"
 import { useNavigate } from "react-router-dom"
 import { useBrandStore } from "../../../context/brandContext"
 import { PATHS } from "../../../paths"
 import type { Role } from "../../../types"
+import { deleteUser, listUsers } from "@/querys/user"
+import { useRoles } from "@/hooks/useRoles"
+import { SelectRole } from "@/UI/Components/Fields/SelectRole"
+import useUserDataStore from "@/context/userDataContext"
+import useRolesStore from "@/context/rolesContext"
+import { handleErrorMutation } from "@/utils/handleError"
+import { User } from "@/domain/User"
 
 const { Title } = Typography
-const { Option } = Select
-const { confirm } = Modal
 
 const UsersListView = () => {
   const navigate = useNavigate()
-  const { currentBrand } = useBrandStore()
+  const { user } = useUserDataStore(state => state)
+  const deleteUserMutation = deleteUser()
+  const { notification } = App.useApp()
 
-  // Estados locales para filtros
   const [searchText, setSearchText] = useState("")
   const [roleFilter, setRoleFilter] = useState<Role | undefined>(undefined)
 
+  const { roles } = useRolesStore(state => state)
+  const { users, refetch, isLoading, isRefetching } = listUsers(`filter[_and][0][active][_eq]=true&filter[_and][1][brand_id][_eq]=${user?.brandId}&filter[_and][2][role][name][_neq]=paciente${!!searchText ? `&filter[_or][3][first_name][_icontains]=${searchText}&filter[_or][4][last_name][_icontains]=${searchText}&filter[_or][5][email][_icontains]=${searchText}`: '' }${!!roleFilter ? `&filter[_and][${!!searchText ? '6' : '3'}][role]=${roleFilter}` : ''}`)
+
+  // Estados locales para filtros
+
   // Simulación de eliminación
   const handleDelete = (id: string) => {
-    confirm({
+    void Modal.confirm({
       title: "¿Estás seguro de eliminar este usuario?",
       content: "Esta acción no se puede deshacer",
       okText: "Sí, eliminar",
       okType: "danger",
       cancelText: "Cancelar",
       onOk() {
-        // En una aplicación real, esto llamaría a la API
-        message.success("Usuario eliminado correctamente")
+        deleteUserMutation.mutate(id, {
+          onSuccess: () => {
+            void refetch()
+            notification.success({ message: "Usuario eliminado correctamente" })
+          },
+          onError: (error) => {
+            const errorMessage = handleErrorMutation(error, 'Ocurrio un error al eliminar el usuario')
+            notification.error({ message: errorMessage })
+          }
+        })
       },
     })
   }
 
-  // Obtener usuarios de la marca actual
-  const users = currentBrand?.users.filter(item => item.role != 'paciente') || []
-
-  // Aplicar filtros
-  const filteredUsers = users.filter((user) => {
-    // Filtrar por texto
-    const matchesSearch =
-      user.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchText.toLowerCase())
-
-    // Filtrar por rol
-    const matchesRole = roleFilter ? user.role === roleFilter : true
-
-    return matchesSearch && matchesRole
-  })
-
   // Columnas de la tabla
   const columns = [
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      render: (text: string) => <small>{text.substring(text.length - 8)}</small>,
+      title: "Nombres",
+      dataIndex: "firstName",
+      key: "firstName",
     },
     {
-      title: "Nombre",
-      dataIndex: "nombre",
-      key: "nombre",
+      title: "Apellidos",
+      dataIndex: "lastName",
+      key: "lastName",
     },
     {
       title: "Email",
@@ -74,8 +76,9 @@ const UsersListView = () => {
       key: "role",
       render: (role: Role) => {
         let color = "default"
+        const roleData = roles.find(item => item.roleId == role)
 
-        switch (role) {
+        switch (roleData?.role.name?.toLocaleLowerCase()) {
           case "admin":
             color = "red"
             break
@@ -89,31 +92,30 @@ const UsersListView = () => {
             color = "purple"
             break
         }
-
-        return <Tag color={color}>{role.toUpperCase()}</Tag>
+        return <Tag color={color}>{roleData?.role.name?.toLocaleUpperCase()}</Tag>
       },
     },
     {
       title: "Acciones",
       key: "actions",
-      render: (_, record: any) => (
+      render: (record: User) => (
         <Space size="middle" className="table-actions">
           <Tooltip title="Ver">
-            <Button icon={<EyeOutlined />} size="middle" onClick={() => navigate(`${PATHS.USERS}/${record.id}`)} />
+            <Button type="primary" ghost icon={<EyeOutlined />} size="small" onClick={() => navigate(`${PATHS.USERS}/${record.id}`)} />
           </Tooltip>
 
           <Tooltip title="Editar">
             <Button
               icon={<EditOutlined />}
-              size="middle"
+              size="small"
               type="primary"
               onClick={() => navigate(`${PATHS.USERS}/${record.id}/editar`)}
             />
           </Tooltip>
 
-          {/* <Tooltip title="Eliminar">
+          <Tooltip title="Eliminar">
             <Button icon={<DeleteOutlined />} size="small" danger onClick={() => handleDelete(record.id)} />
-          </Tooltip> */}
+          </Tooltip>
         </Space>
       ),
     },
@@ -145,23 +147,18 @@ const UsersListView = () => {
           />
         </Col>
         <Col span={8}>
-          <Select
+          <SelectRole
             placeholder="Filtrar por rol"
             style={{ width: "100%" }}
             value={roleFilter}
             onChange={setRoleFilter}
             allowClear
-          >
-            <Option value={undefined}>Todos</Option>
-            <Option value="admin">Administrador</Option>
-            <Option value="recepcionista">Recepcionista</Option>
-            <Option value="especialista">Especialista</Option>
-          </Select>
+          />
         </Col>
       </Row>
 
       {/* Tabla de usuarios */}
-      <Table columns={columns} dataSource={filteredUsers} rowKey="id" pagination={{ pageSize: 10 }} />
+      <Table loading={isLoading || isRefetching} columns={columns} dataSource={users} rowKey="id" pagination={{ pageSize: 10 }} />
     </div>
   )
 }

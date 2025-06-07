@@ -6,11 +6,12 @@ export type AppointmentStatus = "pendiente" | "agendada" | "completa" | "cancela
 
 export interface User {
   id: string
-  nombre: string
+  lastName: string
+  firstName: string
   email: string
   password: string
   role: Role
-  brandId: string
+  brandId: string[]
 }
 
 export interface Area {

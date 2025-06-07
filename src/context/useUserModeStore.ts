@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "@/utils/storeCreate";
 import { persist } from 'zustand/middleware';
 
 export enum UserFontUse {

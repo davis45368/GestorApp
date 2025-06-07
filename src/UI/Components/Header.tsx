@@ -1,24 +1,24 @@
 "use client"
 
-import { Layout, Menu, Dropdown, Button, Avatar, Space, Flex, Typography, Select, theme, Image } from "antd"
-import { UserOutlined, DownOutlined, LogoutOutlined, KeyOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons"
-import { Link, useNavigate } from "react-router-dom"
-import { useUserStore } from "../../context/userContext"
-import { useBrandStore } from "../../context/brandContext"
+import { Layout, Dropdown, Button, Avatar, Space, Flex, Typography, Select, theme, Image } from "antd"
+import { UserOutlined, DownOutlined, LogoutOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons"
+import { useNavigate } from "react-router-dom"
 import { PATHS } from "../../paths"
 import { useEffect } from "react"
 import useUserModeStore, { UserFontUse } from "@/context/useUserModeStore"
 import { Option } from "@/types"
 import { MenuProps } from "antd/lib"
 import logo from "../../../assets/GestorAppLogo.png"
+import useUserDataStore from "@/context/userDataContext"
+import { resetAllStores } from "@/utils/storeCreate"
 
 const { Header } = Layout
 
 const AppHeader = () => {
-  const { user, logout } = useUserStore()
+  const { user } = useUserDataStore()
   const navigate = useNavigate()
 
-  const { darkMode, userMode, setUserMode, setMode, resetStore } = useUserModeStore(state => state);
+  const { darkMode, userMode, setUserMode, setMode } = useUserModeStore(state => state);
 
   const { token: { colorBgContainer, colorBorder } } = theme.useToken();
 
@@ -57,8 +57,7 @@ const AppHeader = () => {
 	}, []);
 
   const handleLogout = () => {
-    logout()
-	void resetStore()
+	void resetAllStores()
     navigate(PATHS.LOGIN)
   }
 
@@ -116,7 +115,7 @@ const AppHeader = () => {
             <Button ghost type="primary" style={{ height: '40px' }}>
               <Space>
                 <Avatar icon={<UserOutlined />} />
-                {user.nombre}
+                	{user.firstName}{' '}{user.lastName}
                 <DownOutlined />
               </Space>
             </Button>

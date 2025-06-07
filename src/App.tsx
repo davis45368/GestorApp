@@ -8,46 +8,47 @@ import { useBrandStore } from "./context/brandContext"
 import { PATHS } from "./paths"
 
 // Layouts
-import AuthLayout from "./UI/Layouts/AuthLayout"
-import DashboardLayout from "./UI/Layouts/DashboardLayout"
+import AuthLayout from "@layouts/AuthLayout"
+import DashboardLayout from "@layouts/DashboardLayout"
 
 // Vistas de Auth
-import LoginView from "./UI/Routes/Auth/LoginView"
-import RegisterView from "./UI/Routes/Auth/RegisterView"
-import ChangePasswordView from "./UI/Routes/Auth/ChangePasswordView"
+import LoginView from "@routes/Auth/LoginView"
+import RegisterView from "@routes/Auth/RegisterView"
+import ChangePasswordView from "@routes/Auth/ChangePasswordView"
 
 // Vistas de Dashboard
-import DashboardView from "./UI/Routes/Dashboard/DashboardView"
+import DashboardView from "@routes/Dashboard/DashboardView"
 
 // Vistas de Citas
-import AppointmentsListView from "./UI/Routes/Appointments/AppointmentsListView"
-import AppointmentDetailView from "./UI/Routes/Appointments/AppointmentDetailView"
-import AppointmentCreateView from "./UI/Routes/Appointments/AppointmentCreateView"
+import AppointmentsListView from "@routes/Appointments/AppointmentsListView"
+import AppointmentDetailView from "@routes/Appointments/AppointmentDetailView"
+import AppointmentCreateView from "@routes/Appointments/AppointmentCreateView"
 
 // Vistas de Usuarios
-import UsersListView from "./UI/Routes/Users/UsersListView"
+import UsersListView from "@routes/Users/UsersListView"
 
 // Vistas de Áreas
-import AreasListView from "./UI/Routes/Areas/AreasListView"
-import AreaDetailView from "./UI/Routes/Areas/AreaDetailView"
+import AreasListView from "@routes/Areas/AreasListView"
+import AreaDetailView from "@routes/Areas/AreaDetailView"
 
 // Vistas de Especialistas
-import SpecialistsListView from "./UI/Routes/Specialists/SpecialistsListView"
+import SpecialistsListView from "@routes/Specialists/SpecialistsListView"
 
 // Protección de rutas
-import ProtectedRoute from "./UI/Components/ProtectedRoute"
-import RoleProtectedRoute from "./UI/Components/RoleProtectedRoute"
+import ProtectedRoute from "@components/ProtectedRoute"
+import RoleProtectedRoute from "@components/RoleProtectedRoute"
 import useUserModeStore from "./context/useUserModeStore"
-import CustomLayout from "./UI/Layouts/Layout"
-import UserFormView from "./UI/Routes/Users/UserFormView"
-import AreaFormView from "./UI/Routes/Areas/AreaFormView"
-import SpecialistFormView from "./UI/Routes/Specialists/SpecialistFormView"
-import AppointmentEditView from "./UI/Routes/Appointments/AppointmentEditView"
+import CustomLayout from "@layouts/Layout"
+import UserFormView from "@routes/Users/UserFormView"
+import AreaFormView from "@routes/Areas/AreaFormView"
+import SpecialistFormView from "@routes/Specialists/SpecialistFormView"
+import AppointmentEditView from "@routes/Appointments/AppointmentEditView"
+import HomeView from "@layouts/Home"
+import useUserDataStore from "./context/userDataContext"
 
 function App() {
 const { loadInitialData, loading } = useBrandStore()
-const { user } = useUserStore()
-
+const { user } = useUserDataStore(state => state)
 const { defaultAlgorithm, darkAlgorithm, useToken } = theme;
 const { darkMode } = useUserModeStore(state => state);
 
@@ -77,6 +78,7 @@ return (
 		}}
 	>
 		<Routes>
+			<Route path={PATHS.LOADING_DATA} element={<HomeView />} />
 			{/* Rutas de Citas */}
 			<Route path={PATHS.APPOINTMENTS} element={
 				<RoleProtectedRoute allowedRoles={['especialista', 'paciente', 'recepcionista']}	>
@@ -139,7 +141,7 @@ return (
 					path={PATHS.DASHBOARD}
 					element={
 						<RoleProtectedRoute allowedRoles={["admin", "recepcionista", "especialista"]}>
-						<DashboardView />
+							<DashboardView />
 						</RoleProtectedRoute>
 					}
 				/>

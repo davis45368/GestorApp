@@ -3,29 +3,37 @@ import { Navigate } from "react-router-dom"
 import { useUserStore } from "../../context/userContext"
 import { PATHS } from "../../paths"
 import type { Role } from "../../types"
+import useUserJWTStore from "@/context/UserDataJWTStore"
+import useUserDataStore from "@/context/userDataContext"
+import useRolesStore from "@/context/rolesContext"
 
 interface RoleProtectedRouteProps {
-  children: ReactNode
-  allowedRoles: Role[]
+	children: ReactNode
+	allowedRoles: Role[]
 }
 
 const RoleProtectedRoute = ({ children, allowedRoles }: RoleProtectedRouteProps) => {
-  const { user } = useUserStore()
+	const { userRole } = useRolesStore(state => state)
+	const { isExpiredAccessToken, refreshAccessToken, jwt } = useUserJWTStore(state => state)
 
-  if (!user) {
-    return <Navigate to={PATHS.LOGIN} replace />
-  }
+	if (!userRole || !jwt.refreshToken) {
+		return <Navigate to={PATHS.LOGIN} replace />
+	}
 
-  if (!allowedRoles.includes(user.role)) {
-    // Redirigir según el rol
-    if (user.role === "paciente") {
-      return <Navigate to={PATHS.APPOINTMENTS} replace />
-    } else {
-      return <Navigate to={PATHS.DASHBOARD} replace />
-    }
-  }
+	if (isExpiredAccessToken()) {
+		void refreshAccessToken()
+	}
 
-  return <>{children}</>
+	if (!allowedRoles.includes(userRole.role.name as Role)) {
+		// Redirigir según el rol
+		if (userRole.role.name.includes("paciente")) {
+			return <Navigate to={PATHS.APPOINTMENTS} replace />
+		} else {
+			return <Navigate to={PATHS.DASHBOARD} replace />
+		}
+	}
+
+	return <>{children}</>
 }
 
 export default RoleProtectedRoute

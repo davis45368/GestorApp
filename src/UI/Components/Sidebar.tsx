@@ -9,15 +9,20 @@ import {
   PartitionOutlined,
 } from "@ant-design/icons"
 import { Link, useLocation } from "react-router-dom"
-import { useUserStore } from "../../context/userContext"
 import { PATHS } from "../../paths"
 import { useMemo } from "react"
+import { useRoles } from "@/hooks/useRoles"
+import { Role } from "@/types"
+import useUserDataStore from "@/context/userDataContext"
 
 const { Sider } = Layout
 
 const Sidebar = () => {
-  const { user } = useUserStore()
+  const { user } = useUserDataStore()
+  const { userRole } = useRoles(user?.id)
   const location = useLocation()
+
+  const role = userRole?.role.name as Role
 
   const { token: { colorBgContainer, colorBorder } } = theme.useToken();
 
@@ -26,7 +31,7 @@ const Sidebar = () => {
     const items = []
 
     // Dashboard (recepcionistas, especialistas, admin)
-    if (user && ["admin", "recepcionista", "especialista"].includes(user.role)) {
+    if (user && ["admin", "recepcionista", "especialista"].includes(role)) {
       items.push({
         key: PATHS.DASHBOARD,
         icon: <DashboardOutlined />,
@@ -34,7 +39,7 @@ const Sidebar = () => {
       })
     }
 
-    if (user && user.role != 'admin') {
+    if (user && role != 'admin') {
       items.push({
         key: PATHS.APPOINTMENTS,
         icon: <CalendarOutlined />,
@@ -43,7 +48,7 @@ const Sidebar = () => {
     }
 
     // Usuarios (solo admin)
-    if (user && user.role === "admin") {
+    if (user && role === "admin") {
       items.push({
         key: PATHS.USERS,
         icon: <UserOutlined />,
@@ -52,7 +57,7 @@ const Sidebar = () => {
     }
 
     // Áreas (solo admin)
-    if (user && user.role === "admin") {
+    if (user && role === "admin") {
       items.push({
         key: PATHS.AREAS,
         icon: <PartitionOutlined />,
@@ -61,7 +66,7 @@ const Sidebar = () => {
     }
 
     // Especialistas (solo admin)
-    if (user && user.role === "admin") {
+    if (user && role === "admin") {
       items.push({
         key: PATHS.SPECIALISTS,
         icon: <TeamOutlined />,

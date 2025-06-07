@@ -6,6 +6,7 @@ export const PATHS = {
 
   // Rutas principales
   HOME: "/home",
+  LOADING_DATA: "/loading-data",
   DASHBOARD: "/home/dashboard",
 
   // Rutas de citas
