@@ -4,7 +4,7 @@ export interface UserDTO {
     last_name: string
     email: string
     active: boolean
-    brand_id: string[]
+    brand_id: string
     role: string
 }
 
@@ -16,7 +16,7 @@ export interface User {
     password?: string
     active: boolean
     role: string
-    brandId: string[]
+    brandId: string
 }
 
 export class UserModel {

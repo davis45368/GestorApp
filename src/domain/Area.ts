@@ -25,11 +25,13 @@ export class AreaModel {
 
     static ToModel(dto: AreaDTO) {
         const area: Area = {
-            ...dto,
+            id: dto.id,
+            active: dto.active,
+            name: dto.name,
             brandId: dto.brand_id,
             specialistsIds: dto.specialists_ids,
-            createdAt: dto.created_at,
-            updateAt: dto.update_at,
+            dateCreated: dto.date_created,
+            dateUpdated: dto.date_updated,
         }
 
         return new AreaModel(area)

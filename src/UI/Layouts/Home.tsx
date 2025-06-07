@@ -5,7 +5,7 @@ import { PATHS } from "@/paths";
 import { getUserById } from "@/querys/user";
 import { Result, Spin } from "antd";
 import { FC } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Home: FC = () => {
     const navigate = useNavigate()
@@ -25,7 +25,7 @@ const Home: FC = () => {
     }
 
     if (!isLoadingUser && !! userModel) setUser(userModel.user)
-¿    if (roles.length && !isLoading && !!user) {
+    if (roles.length && !isLoading && !!user) {
         if (userRole?.role.name?.includes('paciente')) {
             navigate(`${PATHS.APPOINTMENTS}`, { replace: true })
         } else {

@@ -31,8 +31,8 @@ export class SpecialistModel {
             brandId: dto.brand_id,
             doctorCode: dto.doctor_code,
             userId: dto.user_id,
-            createdAt: dto.created_at,
-            updateAt: dto.update_at, 
+            dateCreated: dto.date_created,
+            dateUpdated: dto.date_updated, 
         }
 
         return new SpecialistModel(specialist)

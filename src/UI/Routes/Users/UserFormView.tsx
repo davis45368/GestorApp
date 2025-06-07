@@ -26,7 +26,7 @@ const UserFormView: FC<{ readonly?: boolean }> = ({ readonly=false }) => {
 
   const userMutation= id ? updateUser() : createUser()
 
-  const onFinish = async (values: Partial<User>) => {
+  const onFinish = (values: Partial<User>) => {
     startLoading()
 
     userMutation.mutate({
@@ -50,7 +50,7 @@ const UserFormView: FC<{ readonly?: boolean }> = ({ readonly=false }) => {
       },
       onError: (error) => {
         stopLoading()
-        const errorMessage = handleErrorMutation(error, 'Ocurrio un error al crear el usuario')
+        const errorMessage = handleErrorMutation(error, `Ocurrio un error al ${id ? 'actualizar' : 'crear'} el usuario`)
         notification.error({ message: errorMessage })
       }
     }

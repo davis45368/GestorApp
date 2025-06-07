@@ -1,71 +1,47 @@
 "use client"
 
 import { useState } from "react"
-import { Table, Button, Input, Typography, Space, Row, Col, Modal, message } from "antd"
-import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons"
+import { Table, Button, Input, Typography, Space, Row, Col } from "antd"
+import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined } from "@ant-design/icons"
 import { useNavigate } from "react-router-dom"
-import { useAreaStore } from "../../../context/areaContext"
 import { PATHS } from "../../../paths"
+import useUserDataStore from "@/context/userDataContext"
+import { listAreas } from "@/querys/area"
+import { Area } from "@/domain/Area"
 
 const { Title } = Typography
-const { confirm } = Modal
 
 const AreasListView = () => {
   const navigate = useNavigate()
-  const { getAreas, deleteArea, loading } = useAreaStore()
+  const { user } = useUserDataStore(state => state)
 
   // Estados locales
   const [searchText, setSearchText] = useState("")
 
-  // Manejar eliminación
-  const handleDelete = async (id: string) => {
-    confirm({
-      title: "¿Estás seguro de eliminar esta área?",
-      content: "Esta acción no se puede deshacer",
-      okText: "Sí, eliminar",
-      okType: "danger",
-      cancelText: "Cancelar",
-      onOk: async () => {
-        const success = await deleteArea(id)
-        if (success) {
-          message.success("Área eliminada correctamente")
-        } else {
-          message.error("Error al eliminar el área")
-        }
-      },
-    })
-  }
-
-  // Aplicar filtros
-  const filteredAreas = getAreas()?.filter((area) => area.nombre.toLowerCase().includes(searchText.toLowerCase()))
+  const { areas, isRefetching, isLoading } = listAreas(`filter[_and][0][active][_eq]=true&filter[_and][1][brand_id][_eq]=${user?.brandId}&search=${searchText}`)
 
   // Columnas de la tabla
   const columns = [
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      render: (text: string) => <small>{text?.substring(text.length - 8)}</small>,
-    },
-    {
       title: "Nombre",
-      dataIndex: "nombre",
-      key: "nombre",
+      dataIndex: "name",
+      key: "name",
     },
     {
       title: "Especialistas",
-      key: "especialistas",
-      render: (_, record: any) => record.especialistaIds.length,
+      key: "specialistsIds",
+      dataIndex: 'specialistsIds',
+      render: (specialistsIds: string[]) => specialistsIds.length,
     },
     {
       title: "Acciones",
       key: "actions",
-      render: (_, record: any) => (
+      render: (record: Area) => (
         <Space size="small" className="table-actions">
-          <Button icon={<EyeOutlined />} size="middle" onClick={() => navigate(`${PATHS.AREAS}/${record.id}`)} />
+          <Button type="primary" ghost icon={<EyeOutlined />} size="small" onClick={() => navigate(`${PATHS.AREAS}/${record.id}`)} />
           <Button
             icon={<EditOutlined />}
-            size="middle"
+            size="small"
             type="primary"
             onClick={() => navigate(`${PATHS.AREAS}/${record.id}/editar`)}
           />
@@ -102,7 +78,7 @@ const AreasListView = () => {
       </Row>
 
       {/* Tabla de áreas */}
-      <Table columns={columns} dataSource={filteredAreas} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} />
+      <Table columns={columns} dataSource={areas} rowKey="id" loading={isLoading || isRefetching} pagination={{ pageSize: 10 }} />
     </div>
   )
 }

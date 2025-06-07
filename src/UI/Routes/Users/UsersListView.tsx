@@ -1,13 +1,11 @@
 "use client"
 import { useState } from "react"
-import { Table, Button, Input, Select, Typography, Space, Row, Col, Tag, App, Tooltip, Modal } from "antd"
+import { Table, Button, Input, Typography, Space, Row, Col, Tag, App, Tooltip, Modal } from "antd"
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons"
 import { useNavigate } from "react-router-dom"
-import { useBrandStore } from "../../../context/brandContext"
 import { PATHS } from "../../../paths"
 import type { Role } from "../../../types"
 import { deleteUser, listUsers } from "@/querys/user"
-import { useRoles } from "@/hooks/useRoles"
 import { SelectRole } from "@/UI/Components/Fields/SelectRole"
 import useUserDataStore from "@/context/userDataContext"
 import useRolesStore from "@/context/rolesContext"
@@ -27,9 +25,6 @@ const UsersListView = () => {
 
   const { roles } = useRolesStore(state => state)
   const { users, refetch, isLoading, isRefetching } = listUsers(`filter[_and][0][active][_eq]=true&filter[_and][1][brand_id][_eq]=${user?.brandId}&filter[_and][2][role][name][_neq]=paciente${!!searchText ? `&filter[_or][3][first_name][_icontains]=${searchText}&filter[_or][4][last_name][_icontains]=${searchText}&filter[_or][5][email][_icontains]=${searchText}`: '' }${!!roleFilter ? `&filter[_and][${!!searchText ? '6' : '3'}][role]=${roleFilter}` : ''}`)
-
-  // Estados locales para filtros
-
   // Simulación de eliminación
   const handleDelete = (id: string) => {
     void Modal.confirm({

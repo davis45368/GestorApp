@@ -1,11 +1,11 @@
 export interface BaseDto {
     active: boolean,
-    created_at: string,
-    update_at: string
+    date_created: string,
+    date_updated: string
 }
 
 export interface Base {
     active: boolean,
-    createdAt: string,
-    updateAt: string
+    dateCreated: string,
+    dateUpdated: string
 }
