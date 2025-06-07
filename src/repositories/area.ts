@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Area, AreaDTO, AreaModel } from '@/domain/Area';
+import { UpdateArea } from '@/querys/area';
 
 export class ImplementationAreaRepository {
     protected readonly baseUrl: string = 'items/areas/';
@@ -26,7 +27,7 @@ export class ImplementationAreaRepository {
         return await axios.post(this.baseUrl, AreaModel.ToDTo(data))
     }
 
-    async update(data: Partial<Area>) {
+    async update(data: UpdateArea) {
         return await axios.patch(this.baseUrl+data.id, AreaModel.ToDTo(data))
     }
 

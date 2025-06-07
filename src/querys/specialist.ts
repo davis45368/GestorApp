@@ -5,7 +5,7 @@ import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 export const listSpecialists = (filter: string) => {
     const queryInfo = useQuery({
         queryKey: ['list', 'specialists', filter],
-        enabled: true,
+        enabled: !!filter,
         placeholderData: keepPreviousData,
         queryFn: () => {
             return repository.list(filter)

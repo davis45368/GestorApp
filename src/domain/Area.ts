@@ -1,3 +1,4 @@
+import { UpdateArea } from "@/querys/area"
 import { Base, BaseDto } from "./Base"
 
 export interface AreaDTO extends BaseDto {
@@ -5,6 +6,16 @@ export interface AreaDTO extends BaseDto {
     name: string
     brand_id: string
     specialists_ids: string[]
+}
+export interface AreaUpdateDTO extends BaseDto {
+    id: string
+    name: string
+    brand_id: string
+    specialists_ids: {
+        create: [],
+        update: {area_id: string, id: string}[],
+        delete: string[]
+    }
 }
 
 export interface Area extends Base {
@@ -37,11 +48,11 @@ export class AreaModel {
         return new AreaModel(area)
     }
 
-    static ToDTo(area: Partial<Area>): Partial<AreaDTO> {
+    static ToDTo(area: UpdateArea): Partial<AreaUpdateDTO> {
         return {
             brand_id: area.brandId,
-            specialists_ids: area.specialistsIds,
             name: area.name,
+            ...(area.specialListIdsUpdate ? { specialists_ids: area.specialListIdsUpdate } : {}),
             ...(area.id ? { id: area.id } : {})
         }
     }

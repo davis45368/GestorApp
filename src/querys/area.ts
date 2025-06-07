@@ -2,6 +2,13 @@ import { Area } from "@/domain/Area"
 import { repository } from "@/repositories/area"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 
+export interface UpdateArea extends Partial<Area> {
+    specialListIdsUpdate?: {
+        create: [],
+        update: {area_id: string, id: string}[],
+        delete: string[]
+    }
+}
 export const listAreas = (filter: string) => {
     const queryInfo = useQuery({
         queryKey: ['list', 'areas', filter],
@@ -47,7 +54,7 @@ export const createArea = () => {
 }
 export const updateArea = () => {
     const mutation = useMutation({
-        mutationFn: (data: Partial<Area>) => {
+        mutationFn: (data: UpdateArea) => {
             return repository.update(data)
         }
     })
