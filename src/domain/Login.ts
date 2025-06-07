@@ -9,6 +9,24 @@ export type LoginData = {
 	password: string,
 };
 
+export type VerifyEmailUserData = {
+	token: string,
+};
+
+export type VerifyEmailChangePassword = {
+	email: string,
+};
+
+export type ChangePasswordData = {
+	email: string,
+};
+
+export type ChangePasswordRecovery = {
+	email: string,
+	token: string,
+	password: string
+};
+
 export interface LoginJwt {
 	accessToken: string,
 	refreshToken: string,

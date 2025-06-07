@@ -14,7 +14,8 @@ import DashboardLayout from "@layouts/DashboardLayout"
 // Vistas de Auth
 import LoginView from "@routes/Auth/LoginView"
 import RegisterView from "@routes/Auth/RegisterView"
-import ChangePasswordView from "@routes/Auth/ChangePasswordView"
+import VerifyEmailUserView from "./UI/Routes/Auth/VerifyEmailUserView"
+import VerifyEmailChangePassword from "./UI/Routes/Auth/VerifyEmailChangePasswordView"
 
 // Vistas de Dashboard
 import DashboardView from "@routes/Dashboard/DashboardView"
@@ -45,6 +46,8 @@ import SpecialistFormView from "@routes/Specialists/SpecialistFormView"
 import AppointmentEditView from "@routes/Appointments/AppointmentEditView"
 import HomeView from "@layouts/Home"
 import useUserDataStore from "./context/userDataContext"
+import ChangePasswordView from "./UI/Routes/Auth/ChangePasswordView"
+import ResetPasswordView from "./UI/Routes/Auth/ResetPasswordView"
 
 function App() {
 const { loadInitialData, loading } = useBrandStore()
@@ -152,6 +155,9 @@ return (
 				<Route index path={PATHS.LOGIN} element={<LoginView />} />
 				<Route path={PATHS.REGISTER} element={<RegisterView />} />
 				<Route path={PATHS.CHANGE_PASSWORD} element={<ChangePasswordView />} />
+				<Route index path={PATHS.VERIFY_EMAIL_USER} element={<VerifyEmailUserView />} />
+				<Route index path={PATHS.VIRIFY_EMAIL_CHANGE_PASSWORD} element={<VerifyEmailChangePassword />} />
+				<Route index path={PATHS.CHANGE_PASSWORD_RESET} element={<ResetPasswordView />} />
 			</Route>
 
 			{/* Ruta por defecto */}

@@ -112,7 +112,7 @@ const LoginView = () => {
 			<div style={{ textAlign: "center", marginTop: 16 }}>
 				<Link to={PATHS.REGISTER}>Registrarme como paciente</Link>
 				<br />
-				<Link to={PATHS.CHANGE_PASSWORD}>Olvidé mi contraseña</Link>
+				<Link to={PATHS.VIRIFY_EMAIL_CHANGE_PASSWORD}>Olvidé mi contraseña</Link>
 			</div>
 			</Form>
 		</Card>

@@ -80,6 +80,7 @@ export interface UserStoreState extends UserState {
   logout: () => void
   register: (userData: Omit<User, "id"> & { password: string; brandId: string }) => Promise<User | null>
   changePassword: (userId: string, oldPassword: string, newPassword: string) => Promise<boolean>
+  verifyEmail: (token: string) => Promise<boolean>
 }
 
 export interface BrandStoreState extends BrandState {

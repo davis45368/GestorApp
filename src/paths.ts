@@ -3,6 +3,9 @@ export const PATHS = {
   LOGIN: "/login",
   REGISTER: "/register",
   CHANGE_PASSWORD: "/change-password",
+  VERIFY_EMAIL_USER: "/users/register/verify-email",
+  VIRIFY_EMAIL_CHANGE_PASSWORD: "/verify-email",
+  CHANGE_PASSWORD_RESET: "/admin/reset-password",
 
   // Rutas principales
   HOME: "/home",
