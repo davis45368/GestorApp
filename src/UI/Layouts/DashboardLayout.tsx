@@ -29,7 +29,7 @@ const DashboardLayout = () => {
       <Layout>
         <Sidebar />
         <Layout className="custom-scrollbar">
-          <Content className="site-layout-background" style={{ padding: 24 }}>
+          <Content className="site-layout-background" style={{ padding: 24, height: '100vh' }}>
             <Outlet />
           </Content>
         </Layout>

@@ -1,5 +1,6 @@
 import useRolesStore from "@/context/rolesContext";
 import { useUserStore } from "@/context/userContext";
+import useUserDataStore from "@/context/userDataContext";
 import { Appointment, AppointmentFull } from "@/domain/Appointment";
 import { PATHS } from "@/paths";
 import { listAppointmentsFull } from "@/querys/appointment";
@@ -10,16 +11,17 @@ import { SelectSpecialist } from "@/UI/Components/Fields/selectSpecialist";
 import StatusTag from "@/UI/Components/StatusBadge";
 import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined } from "@ant-design/icons"
 import { Button, Col, Input, Row, Select, Space, Table, Tooltip, Typography } from "antd";
-import dayjs from "dayjs";
 import { FC, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 interface StateFilter {
 	searchText?: string,
 	appointmentStatus?: string
+	appointmentStatusSpecialist?: string
 	areaId?: string
 	specialistsId?: string
 	brandId?: string
+	isSpecialist?: string
 }
 
 const { Title } = Typography;
@@ -28,18 +30,20 @@ const { Title } = Typography;
 const AppointmentsListView: FC = () => {
 	const navigate = useNavigate()
 	const { userRole } = useRolesStore(state => state)
-	const { user } = useUserStore(state => state)
+	const { user } = useUserDataStore(state => state)
 
 	const span = userRole?.role.name == 'especialista' ? 12 : 6
-	const [filterState, setFilterState] = useState<StateFilter>({ searchText: undefined, appointmentStatus: undefined, areaId: undefined, specialistsId: undefined, brandId: user?.brandId ?? undefined })
+	const [filterState, setFilterState] = useState<StateFilter>({ searchText: undefined, appointmentStatus: undefined, areaId: undefined, specialistsId: undefined, brandId: user?.brandId ?? undefined, isSpecialist: userRole?.role.name == 'especialista' ? user?.id : undefined, appointmentStatusSpecialist: userRole?.role.name == 'especialista' ? 'agendada,completa' : undefined })
 
 	const getFilters = () => {
 		const fieldMap: Record<keyof StateFilter, string[] | string> = {
 			searchText: 'search=',
 			appointmentStatus: ['filter[_and]','[status][_eq]='],
+			appointmentStatusSpecialist: ['filter[_and]','[status][_in]='],
 			areaId: ['filter[_and]','[area_id][_eq]='],
 			brandId: ['filter[_and]','[brand_id][_eq]='],
-			specialistsId: ['filter[_and]', '[specialint_id][_eq]=']
+			specialistsId: ['filter[_and]', '[specialint_id][_eq]='],
+			isSpecialist: ['filter[_and]', '[specialint_id][user_id][_eq]=']
 		}
 
 		const keys = Object.keys(filterState)
@@ -105,7 +109,7 @@ const AppointmentsListView: FC = () => {
 					/>
 				</Tooltip>
 
-				{userRole?.role.name != 'especialista' && (
+				{(userRole?.role.name != 'especialista' && !([AppointmentStatus.completed, AppointmentStatus.canceled].includes(record.status))) && (
 					<Tooltip title="Editar">
 						<Button
 						icon={<EditOutlined />}

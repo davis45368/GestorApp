@@ -7,11 +7,12 @@ import { usePatients } from "@/hooks/usePatients";
 import { PATHS } from "@/paths";
 import { createAppointment, getAppointmentById, updateAppointment } from "@/querys/appointment";
 import { createFile, deleteFile } from "@/querys/file";
-import { AppointmentStatusOptions } from "@/types/const";
+import { AppointmentStatus, AppointmentStatusOptions } from "@/types/const";
 import { SelectArea } from "@/UI/Components/Fields/SelectArea";
 import { SelectBrand } from "@/UI/Components/Fields/SelectBrand";
 import { SelectSpecialist } from "@/UI/Components/Fields/selectSpecialist";
 import { SelectUser } from "@/UI/Components/Fields/SelectUser";
+import ListDetailMedicalRecords from "@/UI/Components/MedicalReocords/ListDetail";
 import { handleErrorMutation } from "@/utils/handleError";
 import { DeleteOutlined, EyeOutlined, FilePdfOutlined, UploadOutlined } from "@ant-design/icons";
 import { App, Avatar, Button, Card, Col, DatePicker, Form, Input, List, Row, Select, Space, Spin, Tooltip, Typography, Upload } from "antd";
@@ -101,7 +102,8 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
             id: appointment?.appointmentId,
             ...appointment,
             ...values,
-            patientId: values.patientId ?? user?.patientId ?? ''
+            patientId: values.patientId ?? user?.patientId ?? '',
+            status: userRole?.role.name == 'especialista' ? 'completa' as AppointmentStatus : values.status
         }, {
             onSuccess: (response) => {
                 notification.success({ message: `Cita ${id ? 'actualizada' : 'creada'} exitosamente` })
@@ -151,6 +153,8 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
         })
     }
 
+    const isCompletedCanceled = [AppointmentStatus.completed, AppointmentStatus.canceled].includes(appointment?.appointment.status ?? AppointmentStatus.pending)
+
     useEffect(() => {
         if (appointment?.appointment.filesIds) {
             setFilesInfo(appointment.appointment.filesIds)
@@ -166,7 +170,7 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
             <Form
                 form={form}
                 layout="vertical"
-                initialValues={{ ...appointment?.appointment, status: userRole?.role.name == 'especialista' ? 'completa' : appointment?.appointment.status  }}
+                initialValues={{ ...appointment?.appointment }}
                 onFinish={onFinish}
                 disabled={appointmentMutation.isPending || isLoadingUpLoadFiles}
             >
@@ -256,7 +260,7 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
                                     >
                                         <Select
                                             placeholder='Seleccione un estado'
-                                            disabled={(userRole?.role.name == 'especialista') ? false : (isPatient) || !areaId || !specialintId || readonly}
+                                            disabled={(isPatient) || !areaId || !specialintId || readonly}
                                             options={AppointmentStatusOptions}
                                         />
                                     </Form.Item>
@@ -301,7 +305,7 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
                     }
                     <Col span={24}>
                         <Form.Item style={{ marginTop: '10px' }}>
-                            {(userRole?.role.name != 'especialista' ? !readonly : true) && <Button type="primary" htmlType="submit" loading={isLoading}>
+                            {(userRole?.role.name != 'especialista' ? !readonly : !isCompletedCanceled) && <Button type="primary" htmlType="submit" loading={isLoading}>
                                 {!id ? "Crear cita" : userRole?.role.name == 'especialista' ? 'Completar cita' : "Guardar cita"}
                             </Button>}
                             <Button danger loading={isLoading} disabled={false} style={{ marginLeft: 8 }} onClick={() => navigate(PATHS.APPOINTMENTS)}>
@@ -311,6 +315,11 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
                     </Col>
                 </Row>
             </Form>
+
+            {userRole?.role.name == 'especialista' && 
+                <ListDetailMedicalRecords readonly={isCompletedCanceled} specialintId={appointment?.appointment.specialintId} appoimentId={id} />
+            }
+
             {isRefetching ? (
                 <Spin spinning={isRefetching} />  
                 ) : (
