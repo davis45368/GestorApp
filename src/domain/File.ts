@@ -1,47 +1,41 @@
-import { Base, BaseDto } from "./Base"
 
 export interface FileDTO {
     id: string
     filename_download?: string,
     folder?: string
-    appointment_id: string 
+    appointment_id: string[]
 }
 
-interface FileDtoCreate {
-    name: string
+export interface FileDtoCreate {
     folder?: string
     appointment_id: string 
-    binary: ArrayBuffer
+    file: File
 }
 
-export interface File extends Base {
+export interface Files {
     id: string
-    name: string
+    filenameDownload?: string,
+    folder?: string
+    appointmentId: string[]
 }
 
 export class FileModel {
     fileId: string
-    file: File
+    file: Files
 
-    constructor(file:File) {
+    constructor(file:Files) {
         this.fileId=file.id,
         this.file = file
     }
 
     static ToModel(dto: FileDTO) {
-        const file: File = {
-            ...dto,
-            dateCreated: dto.date_created,
-            dateUpdated: dto.date_updated,
+        const file: Files = {
+            appointmentId: dto.appointment_id,
+            id: dto.id,
+            filenameDownload: dto.filename_download,
+            folder: dto.folder
         }
 
         return new FileModel(file)
-    }
-
-    static ToDTo(file: Partial<File>): Partial<FileDTO> {
-        return {
-            name: file.name,
-            ...(file.id ? { id: file.id } : {})
-        }
     }
 }
