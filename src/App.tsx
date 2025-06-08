@@ -22,15 +22,12 @@ import DashboardView from "@routes/Dashboard/DashboardView"
 // Vistas de Citas
 import AppointmentsListView from "@routes/Appointments/AppointmentsListView"
 import AppointmentFormView from "@routes/Appointments/AppointmentFormView"
-// import AppointmentDetailView from "@routes/Appointments/AppointmentDetailView"
-// import AppointmentCreateView from "@routes/Appointments/AppointmentCreateView"
 
 // Vistas de Usuarios
 import UsersListView from "@routes/Users/UsersListView"
 
 // Vistas de Áreas
 import AreasListView from "@routes/Areas/AreasListView"
-import AreaDetailView from "@routes/Areas/AreaDetailView"
 
 // Vistas de Especialistas
 import SpecialistsListView from "@routes/Specialists/SpecialistsListView"
@@ -43,7 +40,6 @@ import CustomLayout from "@layouts/Layout"
 import UserFormView from "@routes/Users/UserFormView"
 import AreaFormView from "@routes/Areas/AreaFormView"
 import SpecialistFormView from "@routes/Specialists/SpecialistFormView"
-import AppointmentEditView from "@routes/Appointments/AppointmentEditView"
 import HomeView from "@layouts/Home"
 import useUserDataStore from "./context/userDataContext"
 import ChangePasswordView from "./UI/Routes/Auth/ChangePasswordView"
@@ -100,9 +96,9 @@ return (
 					</RoleProtectedRoute>
 				}>
 					<Route index element={<AppointmentsListView />} />
-					<Route path={`${PATHS.APPOINTMENTS}/:id`} element={<AppointmentFormView />} />
-					<Route path={`${PATHS.APPOINTMENTS}/:id/editar`} element={<AppointmentFormView />} />
-					<Route path={`${PATHS.APPOINTMENTS}/crear`} element={<AppointmentFormView />} />
+					<Route path={`${PATHS.APPOINTMENTS}/:id`} element={<AppointmentFormView readonly={true} />} />
+					<Route path={`${PATHS.APPOINTMENTS}/:id/editar`} element={<AppointmentFormView readonly={false} />} />
+					<Route path={`${PATHS.APPOINTMENTS}/crear`} element={<AppointmentFormView readonly={false} />} />
 				</Route>
 
 				{/* Rutas de Usuarios (solo admin) */}

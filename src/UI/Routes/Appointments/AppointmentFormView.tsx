@@ -192,7 +192,7 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
                                 name={'patientId'}
                             >
                                 <SelectUser
-                                    disabled={!!id}
+                                    disabled={!!id || readonly}
                                     role="Paciente"
                                     valueKey="patientId"
                                     placeholder='Seleccione un paciente'
@@ -209,7 +209,7 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
                                 >   
                                     <SelectArea
                                         allowClear
-                                        disabled={isPatient}
+                                        disabled={isPatient || readonly}
                                         placeholder={'Seleccione un area'}
                                     />
                                 </Form.Item>
@@ -229,7 +229,7 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
                                             >
                                                 <SelectSpecialist
                                                     allowClear
-                                                disabled={isPatient || !areaId}
+                                                    disabled={isPatient || !areaId || readonly}
                                                     areaId={areaId}
                                                     placeholder='Seleccione un especialista'
                                                 />
@@ -256,7 +256,7 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
                                     >
                                         <Select
                                             placeholder='Seleccione un estado'
-                                            disabled={(isPatient) || !areaId || !specialintId}
+                                            disabled={(isPatient) || !areaId || !specialintId || readonly}
                                             options={AppointmentStatusOptions}
                                         />
                                     </Form.Item>
@@ -271,7 +271,7 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
                         >
                             <DatePicker
                                 style={{ width: '100%' }}
-                                disabled={isPatient}
+                                disabled={isPatient || readonly}
                                 showTime showSecond={false}
                                 placeholder="Fecha y hora de la cita"
                             />
@@ -283,26 +283,29 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
                             label={'Motivo consulta'}
                             name={'reason'}
                         >
-                            <Input.TextArea style={{ height: '5rem' }} placeholder="Ingrese detalladamente el motivo de su consulta" />
+                            <Input.TextArea disabled={readonly} style={{ height: '5rem' }} placeholder="Ingrese detalladamente el motivo de su consulta" />
                         </Form.Item>
                     </Col>
 
-                    <Col span={24}>
-                        <Upload
-                            multiple={false}
-                            showUploadList={false}
-                            beforeUpload={beforeUpload}
-                        >
-                            <Button icon={<UploadOutlined />}>Adjuntar autorización u otros documentos</Button>
-                        </Upload>
-                    </Col>
+                    {!readonly &&
+                        <Col span={24}>
+                            <Upload
+                                disabled={readonly}
+                                multiple={false}
+                                showUploadList={false}
+                                beforeUpload={beforeUpload}
+                            >
+                                <Button icon={<UploadOutlined />}>Adjuntar autorización u otros documentos</Button>
+                            </Upload>
+                        </Col>
+                    }
                     <Col span={24}>
                         <Form.Item style={{ marginTop: '10px' }}>
                             {!readonly && <Button type="primary" htmlType="submit" loading={isLoading}>
                                 {!id ? "Crear cita" : "Guardar cita"}
                             </Button>}
                             <Button danger loading={isLoading} disabled={false} style={{ marginLeft: 8 }} onClick={() => navigate(PATHS.APPOINTMENTS)}>
-                                {readonly ? 'Cerrar': 'Cancelar'}
+                                Cerrar
                             </Button>
                         </Form.Item>
                     </Col>
@@ -330,9 +333,11 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
 
                                             <Col span={2} >
                                                 <Space align="end" style={{ marginTop: '10px' }}>
-                                                    <Tooltip title={'Eliminar'} color="red">
-                                                        <Button onClick={() => removeField(index)} size="small" type="primary" danger icon={<DeleteOutlined />} />
-                                                    </Tooltip>
+                                                    {!readonly &&
+                                                        <Tooltip title={'Eliminar'} color="red">
+                                                            <Button onClick={() => removeField(index)} size="small" type="primary" danger icon={<DeleteOutlined />} />
+                                                        </Tooltip>
+                                                    }
                                                     {item.id &&
                                                         <Tooltip title='Ver archivo' color="cyan">
                                                             <Button size="small" onClick={() => window.open(`${urlApi}assets/${item.id}`)} type="primary" icon={<EyeOutlined />} />
