@@ -38,7 +38,7 @@ export class ImplementationUserRepository {
     }
 
     async update(data: Partial<User>) {
-        return await axios.patch(this.baseUrl+data.id, UserModel.ToDTo(data))
+        return await axios.patch<{ data: UserDTO }>(this.baseUrl+data.id, UserModel.ToDTo(data))
     }
 
     async delete(userId: string) {

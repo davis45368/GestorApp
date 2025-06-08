@@ -1,245 +1,211 @@
-"use client"
+import useRolesStore from "@/context/rolesContext";
+import { useUserStore } from "@/context/userContext";
+import { Appointment, AppointmentFull } from "@/domain/Appointment";
+import { PATHS } from "@/paths";
+import { listAppointmentsFull } from "@/querys/appointment";
+import { AppointmentStatus, AppointmentStatusOptions } from "@/types/const";
+import { SelectArea } from "@/UI/Components/Fields/SelectArea";
+import { SelectBrand } from "@/UI/Components/Fields/SelectBrand";
+import { SelectSpecialist } from "@/UI/Components/Fields/selectSpecialist";
+import StatusTag from "@/UI/Components/StatusBadge";
+import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined } from "@ant-design/icons"
+import { Button, Col, Input, Row, Select, Space, Table, Tooltip, Typography } from "antd";
+import dayjs from "dayjs";
+import { FC, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import { useState, useEffect } from "react"
-import { Table, Button, Input, Select, Typography, Space, Row, Col, Tooltip } from "antd"
-import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons"
-import { Link, useNavigate } from "react-router-dom"
-import dayjs from "dayjs"
-import { useAppointments } from "../../../hooks/useAppointments"
-import { useUserStore } from "../../../context/userContext"
-import { useAreaStore } from "../../../context/areaContext"
-import { useSpecialistStore } from "../../../context/specialistContext"
-import { PATHS } from "../../../paths"
-import StatusBadge from "../../Components/StatusBadge"
-import BrandSelector from "../../Components/BrandSelector"
-import type { Appointment, AppointmentStatus } from "../../../types"
-
-const { Title } = Typography
-const { Option } = Select
-
-const AppointmentsListView = () => {
-  const navigate = useNavigate()
-  const { appointments, loading, setAppointmentFilters, deleteAppointment } = useAppointments()
-  const { user } = useUserStore()
-  const { getAreas } = useAreaStore()
-  const { getSpecialists } = useSpecialistStore()
-
-  const areas = getAreas()
-  const specialists = getSpecialists()
-
-  // Estados locales para filtros
-  const [searchText, setSearchText] = useState<string | undefined>(undefined)
-  const [statusFilter, setStatusFilter] = useState<AppointmentStatus | undefined>(undefined)
-  const [areaFilter, setAreaFilter] = useState<string | undefined>(undefined)
-  const [specialistFilter, setSpecialistFilter] = useState<string | undefined>(undefined)
-
-  // Aplicar filtros
-  useEffect(() => {
-    const filters: any = {}
-
-    if (statusFilter) {
-      filters.estado = statusFilter
-    }
-
-    if (areaFilter) {
-      filters.areaId = areaFilter
-    }
-
-    if (specialistFilter) {
-      filters.especialistaId = specialistFilter
-    }
-
-    setAppointmentFilters(filters)
-  }, [statusFilter, areaFilter, specialistFilter, setAppointmentFilters])
-
-  // Manejar eliminación de cita
-  const handleDelete = async (id: string) => {
-    const success = await deleteAppointment(id)
-    if (success) {
-      // Recargar citas
-      setAppointmentFilters({})
-    }
-  }
-
-  // Columnas de la tabla
-  const columns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      render: (text: string) => <small>{text.substring(text.length - 8)}</small>,
-    },
-    {
-      title: "Área",
-      dataIndex: "areaId",
-      key: "area",
-      render: (areaId: string) => {
-        const area = areas.find((a) => a.id === areaId)
-        return area ? area.nombre : areaId
-      },
-    },
-    {
-      title: "Especialista",
-      dataIndex: "especialistaId",
-      key: "especialista",
-      render: (especialistaId: string) => {
-        const specialist = specialists.find((s) => s.id === especialistaId)
-        return specialist ? specialist.nombre : especialistaId
-      },
-    },
-    {
-      title: "Fecha",
-      dataIndex: "fecha",
-      key: "fecha",
-      render: (date: string) => dayjs(date).format("DD/MM/YYYY HH:mm"),
-    },
-    {
-      title: "Estado",
-      dataIndex: "estado",
-      key: "estado",
-      render: (status: AppointmentStatus) => <StatusBadge status={status} />,
-    },
-    {
-      title: "Acciones",
-      key: "actions",
-      render: (record: Appointment) => (
-        <Space size="small" className="table-actions">
-          <Tooltip title="Ver detalle">
-            <Button
-              icon={<EyeOutlined />}
-              size="small"
-              onClick={() => navigate(`${PATHS.APPOINTMENTS}/${record.id}`)}
-            />
-          </Tooltip>
-
-          {/* Solo admin y recepcionista pueden editar */}
-          {user && (user.role === "admin" || user.role === "recepcionista") && (
-            <Tooltip title="Editar">
-              <Button
-                icon={<EditOutlined />}
-                size="small"
-                type="primary"
-                onClick={() => navigate(`${PATHS.APPOINTMENTS}/${record.id}/editar`)}
-              />
-            </Tooltip>
-          )}
-
-          {/* Solo admin puede eliminar */}
-          {user && user.role === "admin" && (
-            <Tooltip title="Eliminar">
-              <Button icon={<DeleteOutlined />} size="small" danger onClick={() => handleDelete(record.id)} />
-            </Tooltip>
-          )}
-        </Space>
-      ),
-    },
-  ]
-
-  // Filtrar por búsqueda de texto
-  const filteredAppointments = searchText
-    ? appointments.filter((appointment) => {
-        const specialist = specialists.find((s) => s.id === appointment.especialistaId)
-        const area = areas.find((a) => a.id === appointment.areaId)
-
-        return (
-          specialist?.nombre?.toLowerCase().includes(searchText.toLowerCase()) ||
-          area?.nombre?.toLowerCase().includes(searchText.toLowerCase())
-        )
-      })
-    : appointments
-
-    const selectSpan = user?.role != 'especialista' ? 5 : 6
-
-  return (
-    <div>
-      <div className="page-header">
-        <Row justify="space-between" align="middle">
-          <Col>
-            <Title level={2}>Citas</Title>
-          </Col>
-          {user?.role != 'especialista' &&
-            <Col>
-              <Link to={`${PATHS.APPOINTMENTS}/crear`}>
-                <Button type="primary" icon={<PlusOutlined />}>
-                  Nueva Cita
-                </Button>
-              </Link>
-            </Col>
-          }
-        </Row>
-      </div>
-
-      {/* Selector de marca (solo para pacientes) */}
-      {user && user.role === "paciente" && <BrandSelector />}
-
-      {/* Filtros */}
-      <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col span={user?.role != 'especialista' ? 9 : 12}>
-          <Input
-            placeholder="Buscar por especialista o área"
-            prefix={<SearchOutlined />}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-        </Col>
-        <Col span={selectSpan}>
-          <Select
-            placeholder="Filtrar por estado"
-            style={{ width: "100%" }}
-            value={statusFilter}
-            onChange={setStatusFilter}
-            allowClear
-          >
-            <Option value="pendiente">Pendiente</Option>
-            <Option value="agendada">Agendada</Option>
-            <Option value="completa">Completa</Option>
-            <Option value="cancelada">Cancelada</Option>
-          </Select>
-        </Col>
-        <Col span={selectSpan}>
-          <Select
-            placeholder="Filtrar por área"
-            style={{ width: "100%" }}
-            value={areaFilter}
-            onChange={setAreaFilter}
-            allowClear
-          >
-            {areas.map((area) => (
-              <Option key={area.id} value={area.id}>
-                {area.nombre}
-              </Option>
-            ))}
-          </Select>
-        </Col>
-        {user?.role != 'especialista' &&          
-          <Col span={selectSpan}>
-            <Select
-              placeholder="Filtrar por especialista"
-              style={{ width: "100%" }}
-              value={specialistFilter}
-              onChange={setSpecialistFilter}
-              allowClear
-            >
-              {specialists.map((specialist) => (
-                <Option key={specialist.id} value={specialist.id}>
-                  {specialist.nombre}
-                </Option>
-              ))}
-            </Select>
-          </Col>
-        }
-      </Row>
-
-      {/* Tabla de citas */}
-      <Table
-        columns={columns}
-        dataSource={filteredAppointments}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-      />
-    </div>
-  )
+interface StateFilter {
+	searchText?: string,
+	appointmentStatus?: string
+	areaId?: string
+	specialistsId?: string
+	brandId?: string
 }
 
-export default AppointmentsListView
+const { Title } = Typography;
+
+
+const AppointmentsListView: FC = () => {
+	const navigate = useNavigate()
+	const { userRole } = useRolesStore(state => state)
+	const { user } = useUserStore(state => state)
+
+	const span = userRole?.role.name == 'especialista' ? 12 : 6
+	const [filterState, setFilterState] = useState<StateFilter>({ searchText: undefined, appointmentStatus: undefined, areaId: undefined, specialistsId: undefined, brandId: user?.brandId ?? undefined })
+
+	const getFilters = () => {
+		const fieldMap: Record<keyof StateFilter, string[] | string> = {
+			searchText: 'search=',
+			appointmentStatus: ['filter[_and]','[status][_eq]='],
+			areaId: ['filter[_and]','[area_id][_eq]='],
+			brandId: ['filter[_and]','[brand_id][_eq]='],
+			specialistsId: ['filter[_and]', '[specialists_id][_eq]=']
+		}
+
+		const keys = Object.keys(filterState)
+		let filters = 'filter[_and][0][active][_eq]=true'
+
+		keys.forEach((key, index) => {
+			const value = filterState[key as keyof StateFilter] as string | undefined
+			if (value && value != '') {
+				if (key == 'searchText') {
+					filters += `&${fieldMap[key as keyof StateFilter] as string}${value}`
+				} else {
+					filters += `&${fieldMap[key as keyof StateFilter][0] as string}[${index}]${fieldMap[key as keyof StateFilter][1] as string}${value}`
+				}
+			}
+		})
+
+		return filters
+	}
+
+	const { appointments, isLoading } = listAppointmentsFull(getFilters()+'&fields=*,area_id.name,area_id.id,specialint_id.id,specialint_id.name')
+
+	// Columnas de la tabla
+	const columns = [
+		{
+			title: "Área",
+			dataIndex: "areaId",
+			key: "area",
+			render: (areaId: AppointmentFull["areaId"]) => {
+			  return areaId?.name
+			},
+		},
+		{
+			title: "Especialista",
+			dataIndex: "specialintId",
+			key: "specialintId",
+			render: (specialintId: AppointmentFull["specialintId"]) => {
+			  return specialintId?.name
+			},
+		},
+		{
+			title: "Fecha",
+			dataIndex: "fecha",
+			key: "fecha",
+			render: (date: string) => dayjs(date).format("DD/MM/YYYY HH:mm"),
+		},
+		{
+			title: "Estado",
+			dataIndex: "status",
+			key: "status",
+			render: (status: AppointmentStatus) => <StatusTag status={status} />,
+		},
+		{
+			title: "Acciones",
+			key: "actions",
+			render: (record: Appointment) => (
+			<Space size="small" className="table-actions">
+				<Tooltip title="Ver detalle">
+					<Button
+						type="primary"
+						icon={<EyeOutlined />}
+						size="small"
+						ghost
+						onClick={() => navigate(`${PATHS.APPOINTMENTS}/${record.id}`)}
+					/>
+				</Tooltip>
+
+				{userRole?.role.name != 'especialista' && (
+					<Tooltip title="Editar">
+						<Button
+						icon={<EditOutlined />}
+						size="small"
+						type="primary"
+						onClick={() => navigate(`${PATHS.APPOINTMENTS}/${record.id}/editar`)}
+						/>
+					</Tooltip>
+				)}
+			</Space>
+			),
+		},
+	]
+
+	return (
+		<>
+			<div className="page-header">
+				<Row justify={"space-between"} align={'middle'}>
+					<Col>
+						<Title level={2}>Citas</Title>
+					</Col>
+					{['paciente', 'recepcionista'].includes(userRole?.role.name ?? '') &&
+						<Col>
+							<Link to={`${PATHS.APPOINTMENTS}/crear`}>
+								<Button type="primary" icon={<PlusOutlined />}>
+									Nueva Cita
+								</Button>
+							</Link>
+						</Col>
+					}
+				</Row>
+			</div>
+
+			<Row gutter={[10, 0]} style={{ marginBottom: 16 }}>
+				{userRole?.role.name != 'paciente' &&
+					<Col span={span}>
+						<Input
+							placeholder="Buscar por paciente"
+							prefix={<SearchOutlined />}
+							value={filterState.searchText}
+							onChange={(e) => setFilterState({ ...filterState, searchText: e.target.value })}
+						/>
+					</Col>
+				}
+				{userRole?.role.name == 'paciente' && 
+					<Col span={span}>
+						<SelectBrand 
+							
+							style={{ width: "100%" }} 
+							placeholder={'Hospital/Clínica'}
+							onChange={(value: string) => setFilterState({ ...filterState, brandId: value })}
+						 />
+					</Col>
+				}
+				<Col span={span}>
+					<Select
+						placeholder="Filtrar por estado"
+						style={{ width: "100%" }}
+						popupMatchSelectWidth={false}
+						value={filterState.appointmentStatus}
+						onChange={(value: string) => setFilterState({ ...filterState, appointmentStatus: value })}
+						allowClear
+						options={AppointmentStatusOptions}
+					/>
+				</Col>
+				{userRole?.role.name != 'especialista' && (
+					<>
+						<Col span={span}>
+							<SelectArea
+								placeholder="Filtrar por área"
+								style={{ width: "100%" }}
+								value={filterState.areaId}
+								onChange={(value: string) => setFilterState({ ...filterState, areaId: value })}
+								allowClear
+							/>
+						</Col>
+						<Col span={span}>
+							<SelectSpecialist
+								placeholder="Filtrar por especialista"
+								style={{ width: "100%" }}
+								value={filterState.specialistsId}
+								onChange={(value: string) => setFilterState({ ...filterState, specialistsId: value })}
+								allowClear
+							/>
+						</Col>
+
+					</>
+				)}
+			</Row>
+
+			<Table
+				columns={columns}
+				dataSource={appointments}
+				rowKey="id"
+				loading={isLoading}
+				pagination={{ pageSize: 10 }}
+			/>
+		</>
+	)
+}
+
+export default AppointmentsListView;

@@ -17,6 +17,7 @@ export const SelectRole: FC<Omit<SelectProps, "options">> = (props) => {
     return (
         <Select
             {...props}
+            popupMatchSelectWidth={false}
             options={getOptions()}
         />
     )

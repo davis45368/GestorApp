@@ -20,7 +20,7 @@ export const listUsers = (filter: string) => {
 
 export const getUserById = (userId?: string) => {
         const queryInfo = useQuery({
-        queryKey: ['list', 'users', userId],
+        queryKey: ['detail', 'users', userId],
         enabled: !!userId,
         placeholderData: keepPreviousData,
         queryFn: () => {

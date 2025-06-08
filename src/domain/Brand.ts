@@ -22,8 +22,8 @@ export class BrandModel {
     static ToModel(dto: BrandDTO) {
         const brand: Brand = {
             ...dto,
-            createdAt: dto.created_at,
-            updateAt: dto.update_at,
+            dateCreated: dto.date_created,
+            dateUpdated: dto.date_updated,
         }
 
         return new BrandModel(brand)

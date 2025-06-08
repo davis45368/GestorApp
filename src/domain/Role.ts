@@ -21,7 +21,8 @@ export class RoleModel {
 
     static ToModel(dto: RoleDTO) {
         const role: Role = {
-            ...dto
+            ...dto,
+            name: dto.name?.toLocaleLowerCase()
         }
 
         return new RoleModel(role)

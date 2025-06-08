@@ -1,6 +1,6 @@
 "use client"
 
-import { Form, Input, Button, Card, Typography, Alert, Image } from "antd"
+import { Form, Input, Button, Card, Typography, Alert, Image, notification } from "antd"
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
@@ -24,22 +24,12 @@ const RegisterView = () => {
 	const { confirmPasswordRules, passwordRules } = useFormValidation()
 
 	const registerUserMutation = registerUser()
-	const loginMutation = login()
 
 	const onFinish = (values: Pick<User, "email" | "password" | "firstName" | "lastName">) => {
 		registerUserMutation.mutate({ email: values.email, firstName: values.firstName, lastName: values.lastName, password: values.password }, {
 			onSuccess: () => {
-				loginMutation.mutate({ password: values.password, email: values.email }, {
-					onSuccess: (data) => {
-						const response = data.data
-						setJwt(response)
-						navigate(PATHS.LOADING_DATA)
-					},
-					onError: (error) => {
-						const messageError = handleErrorMutation(error, 'Ocurrió un al crear el usuario')
-						setLocalError(messageError)
-					}
-				})
+				notification.info({ message: 'Se ha enviado una notificación a su correo para la verificación de la cuenta' })
+				navigate(PATHS.LOGIN)
 			},
 			onError: (error) => {
 				const messageError = handleErrorMutation(error, 'Ocurrió un error al iniciar sección')

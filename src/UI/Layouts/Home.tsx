@@ -26,7 +26,7 @@ const Home: FC = () => {
     if (!isLoadingUser && !!userModel && !user) setUser(userModel.user)
     if (!isLoading && !!user) {
         if (userRole?.role.name.toLocaleLowerCase()?.includes('paciente')) {
-            navigate(`${PATHS.APPOINTMENTS}`, { replace: true })
+            navigate(`${PATHS.MYINFORMATION}`, { replace: true })
         } else {
             navigate(`${PATHS.DASHBOARD}`, { replace: true })
         }

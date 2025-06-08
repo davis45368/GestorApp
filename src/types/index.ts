@@ -11,7 +11,7 @@ export interface User {
   email: string
   password: string
   role: Role
-  brandId: string[]
+  brandId: string
 }
 
 export interface Area {

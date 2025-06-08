@@ -6,6 +6,7 @@ export interface UserDTO {
     active: boolean
     brand_id: string
     role: string
+    patient_id: string | null
 }
 
 export interface User {
@@ -17,6 +18,7 @@ export interface User {
     active: boolean
     role: string
     brandId: string
+    patientId: string | null
 }
 
 export class UserModel {
@@ -34,6 +36,7 @@ export class UserModel {
             brandId: dto.brand_id,
             firstName: dto.first_name,
             lastName: dto.last_name,
+            patientId: dto.patient_id,
         }
 
         return new UserModel(user)
@@ -46,6 +49,7 @@ export class UserModel {
             last_name: user.lastName,
             brand_id: user.brandId,
             role: user.role,
+            patient_id: user.patientId ?? null,
             ...(user?.password ? { password: user.password } : {}),
             ...(user.id ? { id: user.id } : {})
         }

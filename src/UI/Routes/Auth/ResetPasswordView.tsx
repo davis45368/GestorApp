@@ -1,14 +1,16 @@
 import { Form, Input, Button, Card, Typography, Alert } from "antd"
 import { UserOutlined, LockOutlined } from "@ant-design/icons"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { PATHS } from "../../../paths"
 import { changePasswordRecovery } from "@/querys/auth"
 import { handleErrorMutation } from "@/utils/handleError"
+import useUserModeStore from "@/context/useUserModeStore"
 
 const { Title, Text } = Typography
 
 const ResetPasswordView = () => {
+  const { resetStore } = useUserModeStore(state => state)
   const [searchParams] = useSearchParams()
   const token = searchParams.get("token")
 
@@ -58,6 +60,10 @@ const ResetPasswordView = () => {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    void resetStore()
+  }, [])
 
   return (
     <div className="centered-form" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>

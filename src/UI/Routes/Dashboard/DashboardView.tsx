@@ -1,81 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Row, Col, Card, Statistic, Typography, Divider } from "antd"
 import { CalendarOutlined, CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined } from "@ant-design/icons"
-import { useAppointmentStore } from "../../../context/appointmentContext"
-import { useAreaStore } from "../../../context/areaContext"
-import { useSpecialistStore } from "../../../context/specialistContext"
-import { useBrandStore } from "../../../context/brandContext"
-
 const { Title } = Typography
 
 const DashboardView = () => {
-  const { getAppointments } = useAppointmentStore()
-  const { getAreas } = useAreaStore()
-  const { getSpecialists } = useSpecialistStore()
-  const { currentBrand } = useBrandStore()
-  const [appointmentStats, setAppointmentStats] = useState({
-    total: 0,
-    pendientes: 0,
-    agendadas: 0,
-    completas: 0,
-    canceladas: 0,
-  })
-  const [areaStats, setAreaStats] = useState<any[]>([])
-  const [specialistStats, setSpecialistStats] = useState<any[]>([])
-
-  useEffect(() => {
-    if (currentBrand) {
-      // Obtener las citas
-      const appointments = getAppointments()
-
-      // Calcular estadísticas de citas
-      const stats = {
-        total: appointments.length,
-        pendientes: appointments.filter((a) => a.estado === "pendiente").length,
-        agendadas: appointments.filter((a) => a.estado === "agendada").length,
-        completas: appointments.filter((a) => a.estado === "completa").length,
-        canceladas: appointments.filter((a) => a.estado === "cancelada").length,
-      }
-
-      setAppointmentStats(stats)
-
-      // Calcular estadísticas por área
-      const areas = getAreas()
-      const areaStatsData = areas.map((area) => {
-        const areaAppointments = appointments.filter((a) => a.areaId === area.id)
-        return {
-          id: area.id,
-          nombre: area.nombre,
-          total: areaAppointments.length,
-          pendientes: areaAppointments.filter((a) => a.estado === "pendiente").length,
-          agendadas: areaAppointments.filter((a) => a.estado === "agendada").length,
-          completas: areaAppointments.filter((a) => a.estado === "completa").length,
-          canceladas: areaAppointments.filter((a) => a.estado === "cancelada").length,
-        }
-      })
-
-      setAreaStats(areaStatsData)
-
-      // Calcular estadísticas por especialista
-      const specialists = getSpecialists()
-      const specialistStatsData = specialists.map((specialist) => {
-        const specialistAppointments = appointments.filter((a) => a.especialistaId === specialist.id)
-        return {
-          id: specialist.id,
-          nombre: specialist.nombre,
-          total: specialistAppointments.length,
-          pendientes: specialistAppointments.filter((a) => a.estado === "pendiente").length,
-          agendadas: specialistAppointments.filter((a) => a.estado === "agendada").length,
-          completas: specialistAppointments.filter((a) => a.estado === "completa").length,
-          canceladas: specialistAppointments.filter((a) => a.estado === "cancelada").length,
-        }
-      })
-
-      setSpecialistStats(specialistStatsData)
-    }
-  }, [currentBrand, getAppointments, getAreas, getSpecialists])
 
   return (
     <div>
@@ -88,14 +17,14 @@ const DashboardView = () => {
         <Row gutter={16}>
           <Col span={4}>
             <Card variant={'borderless'} className="dashboard-card">
-              <Statistic title="Total Citas" value={appointmentStats.total} prefix={<CalendarOutlined />} />
+              <Statistic title="Total Citas" value={0} prefix={<CalendarOutlined />} />
             </Card>
           </Col>
           <Col span={5}>
             <Card variant={'borderless'} className="dashboard-card">
               <Statistic
                 title="Pendientes"
-                value={appointmentStats.pendientes}
+                value={1}
                 valueStyle={{ color: "#faad14" }}
                 prefix={<ClockCircleOutlined />}
               />
@@ -105,7 +34,7 @@ const DashboardView = () => {
             <Card variant={'borderless'} className="dashboard-card">
               <Statistic
                 title="Agendadas"
-                value={appointmentStats.agendadas}
+                value={2}
                 valueStyle={{ color: "#1890ff" }}
                 prefix={<CalendarOutlined />}
               />
@@ -115,7 +44,7 @@ const DashboardView = () => {
             <Card variant={'borderless'} className="dashboard-card">
               <Statistic
                 title="Completadas"
-                value={appointmentStats.completas}
+                value={3}
                 valueStyle={{ color: "#52c41a" }}
                 prefix={<CheckCircleOutlined />}
               />
@@ -125,7 +54,7 @@ const DashboardView = () => {
             <Card variant={'borderless'} className="dashboard-card">
               <Statistic
                 title="Canceladas"
-                value={appointmentStats.canceladas}
+                value={4}
                 valueStyle={{ color: "#ff4d4f" }}
                 prefix={<CloseCircleOutlined />}
               />
@@ -139,7 +68,7 @@ const DashboardView = () => {
       <div className="dashboard-stats">
         <Title level={3}>Citas por Áreas</Title>
         <Row gutter={16}>
-          {areaStats.map((area) => (
+          {/* {areaStats.map((area) => (
             <Col span={8} key={area.id}>
               <Card title={area.nombre} variant={'borderless'} className="dashboard-card">
                 <Statistic title="Total Citas" value={area.total} prefix={<CalendarOutlined />} />
@@ -155,8 +84,7 @@ const DashboardView = () => {
                   </Col>
                 </Row>
               </Card>
-            </Col>
-          ))}
+            </Col> */}
         </Row>
       </div>
 
@@ -165,7 +93,7 @@ const DashboardView = () => {
       <div className="dashboard-stats">
         <Title level={3}>Citas por Especialistas</Title>
         <Row gutter={16}>
-          {specialistStats.map((specialist) => (
+          {/* {specialistStats.map((specialist) => (
             <Col span={8} key={specialist.id}>
               <Card title={specialist.nombre} bordered={false} className="dashboard-card">
                 <Statistic title="Total Citas" value={specialist.total} prefix={<CalendarOutlined />} />
@@ -182,7 +110,7 @@ const DashboardView = () => {
                 </Row>
               </Card>
             </Col>
-          ))}
+          ))} */}
         </Row>
       </div>
     </div>

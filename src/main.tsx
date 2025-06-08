@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 
-import { ConfigProvider } from "antd";
+import { ConfigProvider, App as AppAntd } from "antd";
 import esES from "antd/lib/locale/es_ES";
 
 import { BrowserRouter } from "react-router-dom";
@@ -18,6 +18,8 @@ if (!container) throw new Error("Elemento #root no encontrado en el HTML");
 createRoot(container).render(
 	<React.StrictMode>
 		<ConfigProvider locale={esES}>
+			<AppAntd>
+
 			<QueryClientProvider client={queryClient}>	
 				<RequestInterceptor />
 				<ResponseInterceptor />
@@ -25,6 +27,7 @@ createRoot(container).render(
 					<App />
 				</BrowserRouter>
 			</QueryClientProvider>
+			</AppAntd>
 		</ConfigProvider>
 	</React.StrictMode>
 );

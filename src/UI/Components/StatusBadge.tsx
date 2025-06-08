@@ -1,29 +1,36 @@
-import { Badge } from "antd"
-import type { AppointmentStatus } from "../../types"
+import { AppointmentStatus } from "@/types/const"
+import { Tag } from "antd"
+import { TagProps } from "antd/lib"
 
 interface StatusBadgeProps {
-  status: AppointmentStatus
+	status: AppointmentStatus
 }
 
-const StatusBadge = ({ status }: StatusBadgeProps) => {
-  const getStatusConfig = (status: AppointmentStatus) => {
-    switch (status) {
-      case "pendiente":
-        return { status: "warning", text: "Pendiente" }
-      case "agendada":
-        return { status: "processing", text: "Agendada" }
-      case "completa":
-        return { status: "success", text: "Completa" }
-      case "cancelada":
-        return { status: "error", text: "Cancelada" }
-      default:
-        return { status: "default", text: status }
-    }
-  }
+const StatusTag = ({ status }: StatusBadgeProps) => {
+	const newStatus = status?.toLocaleLowerCase()
 
-  const config = getStatusConfig(status)
+	const statusConfig: { [key: string]: { color: TagProps["color"], text: string } } = {
+		[AppointmentStatus.pending as string]: {
+			color: 'gold',
+			text: 'Pendiente'
+		},
+		[AppointmentStatus.scheduled]: {
+			color: 'blue',
+			text: 'Agendada'
+		},
+		[AppointmentStatus.completed]: {
+			color: 'green',
+			text: 'Completada'
+		},
+		[AppointmentStatus.canceled]: {
+			color: 'red',
+			text: 'Cancelada'
+		},
+	}
 
-  return <Badge status={config.status as any} text={config.text} className="appointment-status-badge" />
+	const config = statusConfig[newStatus]
+	
+	return <Tag color={config?.color}>{config?.text}</Tag> 
 }
 
-export default StatusBadge
+export default StatusTag

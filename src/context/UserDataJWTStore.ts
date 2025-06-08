@@ -1,5 +1,4 @@
 import { LoginJwt } from '@/domain/Login';
-import { PATHS } from '@/paths';
 import { repository } from '@/repositories/auth';
 import dayjs from 'dayjs';
 import { jwtDecode } from 'jwt-decode';

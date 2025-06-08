@@ -27,7 +27,7 @@ const RoleProtectedRoute = ({ children, allowedRoles }: RoleProtectedRouteProps)
 	if (!allowedRoles.includes(userRole.role.name.toLocaleLowerCase() as Role)) {
 		// Redirigir según el rol
 		if (userRole.role.name.includes("paciente")) {
-			return <Navigate to={PATHS.APPOINTMENTS} replace />
+			return <Navigate to={PATHS.MYINFORMATION} replace />
 		} else {
 			return <Navigate to={PATHS.DASHBOARD} replace />
 		}

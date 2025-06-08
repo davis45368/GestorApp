@@ -27,7 +27,7 @@ export const listAreas = (filter: string) => {
 
 export const getAreaById = (areaId?: string) => {
         const queryInfo = useQuery({
-        queryKey: ['list', 'areas', areaId],
+        queryKey: ['detail', 'areas', areaId],
         enabled: !!areaId,
         placeholderData: keepPreviousData,
         queryFn: () => {

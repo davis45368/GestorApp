@@ -1,198 +1,41 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
-import type { AreaStoreState, Area } from "../types"
-import { useBrandStore } from "./brandContext"
+import { Area } from "@/domain/Area";
+import { repository } from "@/repositories/area";
+import { create } from "@/utils/storeCreate";
 
-export const useAreaStore = create<AreaStoreState>()(
-  persist(
-    (set, get) => ({
-      areas: [],
-      loading: false,
-      error: null,
+interface State {
+	areas: Area[],
+	isLoading: boolean,
+	isError: boolean,
+	getAreas: () => void
+	resetStore: () => void
+}
 
-      getAreas: (filters = {}) => {
-        const brandStore = useBrandStore.getState()
-        const currentBrand = brandStore.currentBrand
+const initialState: Pick<State, 'isError' | 'isLoading' | 'areas'> = {
+	isError: false,
+	isLoading: false,
+	areas: [],
+}
 
-        if (!currentBrand) return []
-  
-        // Filtrar áreas por los criterios proporcionados
-        return currentBrand.areas.filter((area) => {
-          for (const [key, value] of Object.entries(filters)) {
-            if (area[key as keyof Area] !== value) {
-              return false
-            }
-          }
-          return true
-        })
-      },
+const useAreaContext = create<State>()(
+	(set, get) => ({
+		...initialState,
+		getAreas: async () => {
+			if (get().isLoading) return;
 
-      getAreaById: (id: string) => {
-        const brandStore = useBrandStore.getState()
-        const currentBrand = brandStore.currentBrand
+			set({ isLoading: true })
 
-        if (!currentBrand) return undefined
+			const response = await repository.list('')
+			
+			if (response.status != 200) {
+				set({ isLoading: false, isError: true })
+			}
 
-        return currentBrand.areas.find((area) => area.id === id)
-      },
-
-      createArea: async (areaData) => {
-        set({ loading: true, error: null })
-        try {
-          // En una app real, esto sería una petición a la API
-          await new Promise((resolve) => setTimeout(resolve, 500))
-
-          const brandStore = useBrandStore.getState()
-          const currentBrand = brandStore.currentBrand
-
-          if (!currentBrand) {
-            throw new Error("No hay marca seleccionada")
-          }
-
-          // Crear nueva área
-          const newArea: Area = {
-            id: `${currentBrand.brandId}-area-${currentBrand.areas.length + 1}`,
-            ...areaData,
-          }
-
-          // Actualizar el store de marcas
-          const updatedBrands = brandStore.brands.map((brand) => {
-            if (brand.brandId === currentBrand.brandId) {
-              return {
-                ...brand,
-                areas: [...brand.areas, newArea],
-              }
-            }
-            return brand
-          })
-
-          // Actualizar el store
-          useBrandStore.setState({
-            brands: updatedBrands,
-            currentBrand: {
-              ...currentBrand,
-              areas: [...currentBrand.areas, newArea],
-            },
-          })
-
-          set({ loading: false })
-          return newArea
-        } catch (error) {
-          set({ error: "Error al crear el área", loading: false })
-          throw error
-        }
-      },
-
-      updateArea: async (id, areaData) => {
-        set({ loading: true, error: null })
-        try {
-          // En una app real, esto sería una petición a la API
-          await new Promise((resolve) => setTimeout(resolve, 500))
-
-          const brandStore = useBrandStore.getState()
-          const currentBrand = brandStore.currentBrand
-
-          if (!currentBrand) {
-            throw new Error("No hay marca seleccionada")
-          }
-
-          let updatedArea: Area | null = null
-
-          // Actualizar el store de marcas
-          const updatedBrands = brandStore.brands.map((brand) => {
-            if (brand.brandId === currentBrand.brandId) {
-              const updatedAreas = brand.areas.map((area) => {
-                if (area.id === id) {
-                  updatedArea = {
-                    ...area,
-                    ...areaData,
-                  }
-                  return updatedArea
-                }
-                return area
-              })
-
-              return {
-                ...brand,
-                areas: updatedAreas,
-              }
-            }
-            return brand
-          })
-
-          if (!updatedArea) {
-            set({ error: "Área no encontrada", loading: false })
-            return null
-          }
-
-          // Actualizar el store
-          useBrandStore.setState({
-            brands: updatedBrands,
-            currentBrand: {
-              ...currentBrand,
-              areas: currentBrand.areas.map((area) => (area.id === id ? { ...area, ...areaData } : area)),
-            },
-          })
-
-          set({ loading: false })
-          return updatedArea
-        } catch (error) {
-          set({ error: "Error al actualizar el área", loading: false })
-          return null
-        }
-      },
-
-      deleteArea: async (id) => {
-        set({ loading: true, error: null })
-        try {
-          // En una app real, esto sería una petición a la API
-          await new Promise((resolve) => setTimeout(resolve, 500))
-
-          const brandStore = useBrandStore.getState()
-          const currentBrand = brandStore.currentBrand
-
-          if (!currentBrand) {
-            throw new Error("No hay marca seleccionada")
-          }
-
-          // Verificar si el área existe
-          const areaExists = currentBrand.areas.some((area) => area.id === id)
-
-          if (!areaExists) {
-            set({ error: "Área no encontrada", loading: false })
-            return false
-          }
-
-          // Actualizar el store de marcas
-          const updatedBrands = brandStore.brands.map((brand) => {
-            if (brand.brandId === currentBrand.brandId) {
-              return {
-                ...brand,
-                areas: brand.areas.filter((area) => area.id !== id),
-              }
-            }
-            return brand
-          })
-
-          // Actualizar el store
-          useBrandStore.setState({
-            brands: updatedBrands,
-            currentBrand: {
-              ...currentBrand,
-              areas: currentBrand.areas.filter((area) => area.id !== id),
-            },
-          })
-
-          set({ loading: false })
-          return true
-        } catch (error) {
-          set({ error: "Error al eliminar el área", loading: false })
-          return false
-        }
-      },
-    }),
-    {
-      name: "area-storage",
-    },
-  ),
+			set({ isLoading: false, areas: response.data,  })
+		},
+		resetStore: () => {
+			set(initialState)
+		}
+	})
 )
+
+export default useAreaContext

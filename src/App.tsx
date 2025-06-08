@@ -2,8 +2,7 @@
 
 import { useEffect } from "react"
 import { Routes, Route, Navigate } from "react-router-dom"
-import { ConfigProvider, Spin, theme } from "antd"
-import { useUserStore } from "./context/userContext"
+import { ConfigProvider, Spin, theme, App as AppAntd } from "antd"
 import { useBrandStore } from "./context/brandContext"
 import { PATHS } from "./paths"
 
@@ -22,8 +21,9 @@ import DashboardView from "@routes/Dashboard/DashboardView"
 
 // Vistas de Citas
 import AppointmentsListView from "@routes/Appointments/AppointmentsListView"
-import AppointmentDetailView from "@routes/Appointments/AppointmentDetailView"
-import AppointmentCreateView from "@routes/Appointments/AppointmentCreateView"
+import AppointmentFormView from "@routes/Appointments/AppointmentFormView"
+// import AppointmentDetailView from "@routes/Appointments/AppointmentDetailView"
+// import AppointmentCreateView from "@routes/Appointments/AppointmentCreateView"
 
 // Vistas de Usuarios
 import UsersListView from "@routes/Users/UsersListView"
@@ -48,6 +48,7 @@ import HomeView from "@layouts/Home"
 import useUserDataStore from "./context/userDataContext"
 import ChangePasswordView from "./UI/Routes/Auth/ChangePasswordView"
 import ResetPasswordView from "./UI/Routes/Auth/ResetPasswordView"
+import PatientFormView from "@routes/Patient/PatientFormView"
 
 function App() {
 const { loadInitialData, loading } = useBrandStore()
@@ -80,89 +81,100 @@ return (
 			algorithm: darkMode ? darkAlgorithm : defaultAlgorithm,
 		}}
 	>
-		<Routes>
-			<Route path={PATHS.LOADING_DATA} element={<HomeView />} />
-			{/* Rutas de Citas */}
-			<Route path={PATHS.APPOINTMENTS} element={
-				<RoleProtectedRoute allowedRoles={['especialista', 'paciente', 'recepcionista']}	>
-					<CustomLayout />
-				</RoleProtectedRoute>
-			}>
-				<Route index element={<AppointmentsListView />} />
-				<Route path={`${PATHS.APPOINTMENTS}/:id`} element={<AppointmentDetailView />} />
-				<Route path={`${PATHS.APPOINTMENTS}/:id/editar`} element={<AppointmentEditView />} />
-				<Route path={`${PATHS.APPOINTMENTS}/crear`} element={<AppointmentCreateView />} />
-			</Route>
+		<AppAntd>
+			<Routes>
+				<Route path={PATHS.LOADING_DATA} element={<HomeView />} />
+				
+				<Route path={PATHS.MYINFORMATION} element={
+					<RoleProtectedRoute allowedRoles={['paciente']}	>
+						<CustomLayout />
+					</RoleProtectedRoute>
+				}>
+					<Route index element={<PatientFormView />} />
+				</Route>
 
-			{/* Rutas de Usuarios (solo admin) */}
-			<Route path={PATHS.USERS} element={
-				<RoleProtectedRoute allowedRoles={["admin"]}>
-					<CustomLayout />
-				</RoleProtectedRoute>
-			}>	
-				<Route index element={<UsersListView />} />	
-				<Route path={`${PATHS.USERS}/crear`} element={<UserFormView />}	/>
-				<Route path={`${PATHS.USERS}/:id`} element={<UserFormView readonly />}	/>
-				<Route path={`${PATHS.USERS}/:id/editar`} element={<UserFormView />}	/>
-			</Route>
+				{/* Rutas de Citas */}
+				<Route path={PATHS.APPOINTMENTS} element={
+					<RoleProtectedRoute allowedRoles={['especialista', 'paciente', 'recepcionista']}	>
+						<CustomLayout />
+					</RoleProtectedRoute>
+				}>
+					<Route index element={<AppointmentsListView />} />
+					<Route path={`${PATHS.APPOINTMENTS}/:id`} element={<AppointmentFormView />} />
+					<Route path={`${PATHS.APPOINTMENTS}/:id/editar`} element={<AppointmentFormView />} />
+					<Route path={`${PATHS.APPOINTMENTS}/crear`} element={<AppointmentFormView />} />
+				</Route>
 
-			{/* Rutas de Áreas (solo admin) */}
-			<Route path={PATHS.AREAS} element={
-				<RoleProtectedRoute allowedRoles={["admin"]}>
-					<CustomLayout />
-				</RoleProtectedRoute>
-			}>	
-				<Route index element={<AreasListView />}/>
-				<Route path={`${PATHS.AREAS}/crear`} element={<AreaFormView />}/>
-				<Route path={`${PATHS.AREAS}/:id/editar`} element={<AreaFormView />}/>
-				<Route path={`${PATHS.AREAS}/:id`} element={<AreaFormView readonly />}/>
-			</Route>
+				{/* Rutas de Usuarios (solo admin) */}
+				<Route path={PATHS.USERS} element={
+					<RoleProtectedRoute allowedRoles={["admin"]}>
+						<CustomLayout />
+					</RoleProtectedRoute>
+				}>	
+					<Route index element={<UsersListView />} />	
+					<Route path={`${PATHS.USERS}/crear`} element={<UserFormView />}	/>
+					<Route path={`${PATHS.USERS}/:id`} element={<UserFormView readonly />}	/>
+					<Route path={`${PATHS.USERS}/:id/editar`} element={<UserFormView />}	/>
+				</Route>
 
-			{/* Rutas de Especialistas (solo admin) */}
-			<Route path={PATHS.SPECIALISTS} element={
-				<RoleProtectedRoute allowedRoles={["admin"]}>
-					<CustomLayout />
-				</RoleProtectedRoute>
-			}>	
-				<Route index element={<SpecialistsListView />}/>
-				<Route path={`${PATHS.SPECIALISTS}/:id`} element={<SpecialistFormView readonly />}/>
-				<Route path={`${PATHS.SPECIALISTS}/crear`} element={<SpecialistFormView />}/>
-				<Route path={`${PATHS.SPECIALISTS}/:id/editar`} element={<SpecialistFormView />}/>
-			</Route>
+				{/* Rutas de Áreas (solo admin) */}
+				<Route path={PATHS.AREAS} element={
+					<RoleProtectedRoute allowedRoles={["admin"]}>
+						<CustomLayout />
+					</RoleProtectedRoute>
+				}>	
+					<Route index element={<AreasListView />}/>
+					<Route path={`${PATHS.AREAS}/crear`} element={<AreaFormView />}/>
+					<Route path={`${PATHS.AREAS}/:id/editar`} element={<AreaFormView />}/>
+					<Route path={`${PATHS.AREAS}/:id`} element={<AreaFormView readonly />}/>
+				</Route>
 
-			{/* Rutas protegidas para dashboard */}
-			<Route
-				path={PATHS.HOME}
-				element={
-				<ProtectedRoute>
-					<DashboardLayout />
-				</ProtectedRoute>
-				}
-			>
-				<Route index element={<Navigate to={PATHS.DASHBOARD} replace />} />
+				{/* Rutas de Especialistas (solo admin) */}
+				<Route path={PATHS.SPECIALISTS} element={
+					<RoleProtectedRoute allowedRoles={["admin"]}>
+						<CustomLayout />
+					</RoleProtectedRoute>
+				}>	
+					<Route index element={<SpecialistsListView />}/>
+					<Route path={`${PATHS.SPECIALISTS}/:id`} element={<SpecialistFormView readonly />}/>
+					<Route path={`${PATHS.SPECIALISTS}/crear`} element={<SpecialistFormView />}/>
+					<Route path={`${PATHS.SPECIALISTS}/:id/editar`} element={<SpecialistFormView />}/>
+				</Route>
+
+				{/* Rutas protegidas para dashboard */}
 				<Route
-					path={PATHS.DASHBOARD}
+					path={PATHS.HOME}
 					element={
-						<RoleProtectedRoute allowedRoles={["admin", "recepcionista", "especialista"]}>
-							<DashboardView />
-						</RoleProtectedRoute>
+					<ProtectedRoute>
+						<DashboardLayout />
+					</ProtectedRoute>
 					}
-				/>
+				>
+					<Route index element={<Navigate to={PATHS.DASHBOARD} replace />} />
+					<Route
+						path={PATHS.DASHBOARD}
+						element={
+							<RoleProtectedRoute allowedRoles={["admin", "recepcionista", "especialista"]}>
+								<DashboardView />
+							</RoleProtectedRoute>
+						}
+					/>
 
-			</Route>
+				</Route>
 
-			<Route element={<AuthLayout />}>
-				<Route index path={PATHS.LOGIN} element={<LoginView />} />
-				<Route path={PATHS.REGISTER} element={<RegisterView />} />
-				<Route path={PATHS.CHANGE_PASSWORD} element={<ChangePasswordView />} />
-				<Route index path={PATHS.VERIFY_EMAIL_USER} element={<VerifyEmailUserView />} />
-				<Route index path={PATHS.VIRIFY_EMAIL_CHANGE_PASSWORD} element={<VerifyEmailChangePassword />} />
-				<Route index path={PATHS.CHANGE_PASSWORD_RESET} element={<ResetPasswordView />} />
-			</Route>
+				<Route element={<AuthLayout />}>
+					<Route index path={PATHS.LOGIN} element={<LoginView />} />
+					<Route path={PATHS.REGISTER} element={<RegisterView />} />
+					<Route path={PATHS.CHANGE_PASSWORD} element={<ChangePasswordView />} />
+					<Route index path={PATHS.VERIFY_EMAIL_USER} element={<VerifyEmailUserView />} />
+					<Route index path={PATHS.VIRIFY_EMAIL_CHANGE_PASSWORD} element={<VerifyEmailChangePassword />} />
+					<Route index path={PATHS.CHANGE_PASSWORD_RESET} element={<ResetPasswordView />} />
+				</Route>
 
-			{/* Ruta por defecto */}
-			<Route path="*" element={<Navigate to={user ? PATHS.HOME : PATHS.LOGIN} replace />} />
-		</Routes>
+				{/* Ruta por defecto */}
+				<Route path="*" element={<Navigate to={user ? PATHS.HOME : PATHS.LOGIN} replace />} />
+			</Routes>
+		</AppAntd>
 	</ConfigProvider>	
 )
 }

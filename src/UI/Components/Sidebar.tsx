@@ -7,6 +7,7 @@ import {
   UserOutlined,
   TeamOutlined,
   PartitionOutlined,
+  IdcardOutlined,
 } from "@ant-design/icons"
 import { Link, useLocation } from "react-router-dom"
 import { PATHS } from "../../paths"
@@ -44,6 +45,14 @@ const Sidebar = () => {
         key: PATHS.APPOINTMENTS,
         icon: <CalendarOutlined />,
         label: <Link to={PATHS.APPOINTMENTS}>Citas</Link>,
+      })
+    }
+
+    if (user && role == 'paciente') {
+      items.push({
+        key: PATHS.MYINFORMATION,
+        icon: <IdcardOutlined />,
+        label: <Link to={PATHS.MYINFORMATION}>Mi información</Link>,
       })
     }
 

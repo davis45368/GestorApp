@@ -20,7 +20,7 @@ export const listSpecialists = (filter: string) => {
 
 export const getSpecialistById = (specialistId?: string) => {
         const queryInfo = useQuery({
-        queryKey: ['list', 'specialists', specialistId],
+        queryKey: ['detail', 'specialists', specialistId],
         enabled: !!specialistId,
         placeholderData: keepPreviousData,
         queryFn: () => {

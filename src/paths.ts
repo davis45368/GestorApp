@@ -11,6 +11,7 @@ export const PATHS = {
   HOME: "/home",
   LOADING_DATA: "/loading-data",
   DASHBOARD: "/home/dashboard",
+  MYINFORMATION: "/home/mi-informacion",
 
   // Rutas de citas
   APPOINTMENTS: "/home/citas",

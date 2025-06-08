@@ -6,6 +6,7 @@ export interface SpecialistDTO extends BaseDto {
     doctor_code: string
     user_id: string | null
     brand_id: string
+    area_id: string
 }
 
 export interface Specialist extends Base {
@@ -14,6 +15,7 @@ export interface Specialist extends Base {
     doctorCode: string
     userId: string | null
     brandId: string
+    areaId: string
 }
 
 export class SpecialistModel {
@@ -28,6 +30,7 @@ export class SpecialistModel {
     static ToModel(dto: SpecialistDTO) {
         const specialist: Specialist = {
             ...dto,
+            areaId: dto.area_id,
             brandId: dto.brand_id,
             doctorCode: dto.doctor_code,
             userId: dto.user_id,

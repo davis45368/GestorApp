@@ -103,7 +103,7 @@ const SpecialistFormView: FC<{ readonly?: boolean }> = ({ readonly = false }) =>
           name={'userId'}
           rules={[{ required: true, message: 'Este campo es requerido' }]}
         >
-          <SelectUser placeholder='Selecciona un usuario para este especialista' />
+          <SelectUser role="Especialista" placeholder='Selecciona un usuario para este especialista' />
         </Form.Item>
 
         <Form.Item>
