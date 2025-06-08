@@ -4,14 +4,16 @@ import { Row, Col, Card, Statistic, Typography, Divider } from "antd"
 import { CalendarOutlined, CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined } from "@ant-design/icons"
 import { appointmentsByArea, appointmentsByState, appointmentsBySpecialist } from "@/querys/dashboard"
 import useUserDataStore from "@/context/userDataContext"
+import useRolesStore from "@/context/rolesContext"
 const { Title } = Typography
 
 const DashboardView = () => {
 
   const { user } = useUserDataStore(state => state);
-  const mutationDashboard = appointmentsByState(user?.id || "", user?.role || "especialista");
+  const { userRole } = useRolesStore();
+  const mutationDashboard = appointmentsByState(user?.id || "",userRole?.role.name || "especialista");
 
-  
+
   const mutationDashboardAreas = appointmentsByArea();
   const mutationDashboardSpecialists = appointmentsBySpecialist();
 
@@ -91,60 +93,63 @@ const DashboardView = () => {
         <Title level={2}>Dashboard</Title>
       </div>
 
-      <div className="dashboard-stats">
-        <Title level={3}>Resumen de Citas</Title>
-        <Row gutter={16}>
-          <Col span={4}>
-            <Card variant={'borderless'} className="dashboard-card">
-              <Statistic title="Total Citas" value={totalAppointments} prefix={<CalendarOutlined />} />
-            </Card>
-          </Col>
-          <Col span={5}>
-            <Card variant={'borderless'} className="dashboard-card">
-              <Statistic
-                title="Pendientes"
-                value={pendingAppointments}
-                valueStyle={{ color: "#faad14" }}
-                prefix={<ClockCircleOutlined />}
-              />
-            </Card>
-          </Col>
-          <Col span={5}>
-            <Card variant={'borderless'} className="dashboard-card">
-              <Statistic
-                title="Agendadas"
-                value={scheduledAppointments}
-                valueStyle={{ color: "#1890ff" }}
-                prefix={<CalendarOutlined />}
-              />
-            </Card>
-          </Col>
-          <Col span={5}>
-            <Card variant={'borderless'} className="dashboard-card">
-              <Statistic
-                title="Completadas"
-                value={completedAppointments}
-                valueStyle={{ color: "#52c41a" }}
-                prefix={<CheckCircleOutlined />}
-              />
-            </Card>
-          </Col>
-          <Col span={5}>
-            <Card variant={'borderless'} className="dashboard-card">
-              <Statistic
-                title="Canceladas"
-                value={cancelledAppointments}
-                valueStyle={{ color: "#ff4d4f" }}
-                prefix={<CloseCircleOutlined />}
-              />
-            </Card>
-          </Col>
-        </Row>
-      </div>
+
+          <div className="dashboard-stats">
+            <Title level={3}>Resumen de Citas</Title>
+            <Row gutter={16}>
+              <Col span={4}>
+                <Card variant={'borderless'} className="dashboard-card">
+                  <Statistic title="Total Citas" value={totalAppointments} prefix={<CalendarOutlined />} />
+                </Card>
+              </Col>
+              <Col span={5}>
+                <Card variant={'borderless'} className="dashboard-card">
+                  <Statistic
+                    title="Pendientes"
+                    value={pendingAppointments}
+                    valueStyle={{ color: "#faad14" }}
+                    prefix={<ClockCircleOutlined />}
+                  />
+                </Card>
+              </Col>
+              <Col span={5}>
+                <Card variant={'borderless'} className="dashboard-card">
+                  <Statistic
+                    title="Agendadas"
+                    value={scheduledAppointments}
+                    valueStyle={{ color: "#1890ff" }}
+                    prefix={<CalendarOutlined />}
+                  />
+                </Card>
+              </Col>
+              <Col span={5}>
+                <Card variant={'borderless'} className="dashboard-card">
+                  <Statistic
+                    title="Completadas"
+                    value={completedAppointments}
+                    valueStyle={{ color: "#52c41a" }}
+                    prefix={<CheckCircleOutlined />}
+                  />
+                </Card>
+              </Col>
+              <Col span={5}>
+                <Card variant={'borderless'} className="dashboard-card">
+                  <Statistic
+                    title="Canceladas"
+                    value={cancelledAppointments}
+                    valueStyle={{ color: "#ff4d4f" }}
+                    prefix={<CloseCircleOutlined />}
+                  />
+                </Card>
+              </Col>
+            </Row>
+          </div>
 
       <Divider />
 
-      <div className="dashboard-stats">
+{ userRole?.role.name !== "especialista" && (
+  <>
+    <div className="dashboard-stats">
         <Title level={3}>Citas por Áreas</Title>
         <Row gutter={16}>
           {areas.map((area) => (
@@ -195,6 +200,9 @@ const DashboardView = () => {
           }
         </Row>
       </div>
+  </>
+) }
+      
     </div>
   )
 }
