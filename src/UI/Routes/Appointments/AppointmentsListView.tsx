@@ -39,7 +39,7 @@ const AppointmentsListView: FC = () => {
 			appointmentStatus: ['filter[_and]','[status][_eq]='],
 			areaId: ['filter[_and]','[area_id][_eq]='],
 			brandId: ['filter[_and]','[brand_id][_eq]='],
-			specialistsId: ['filter[_and]', '[specialists_id][_eq]=']
+			specialistsId: ['filter[_and]', '[specialint_id][_eq]=']
 		}
 
 		const keys = Object.keys(filterState)
