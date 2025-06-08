@@ -81,8 +81,8 @@ const AppointmentsListView: FC = () => {
 		},
 		{
 			title: "Fecha",
-			dataIndex: "fecha",
-			key: "fecha",
+			dataIndex: "date",
+			key: "date",
 		},
 		{
 			title: "Estado",

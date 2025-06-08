@@ -166,7 +166,7 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
             <Form
                 form={form}
                 layout="vertical"
-                initialValues={appointment?.appointment}
+                initialValues={{ ...appointment?.appointment, status: userRole?.role.name == 'especialista' ? 'completa' : appointment?.appointment.status  }}
                 onFinish={onFinish}
                 disabled={appointmentMutation.isPending || isLoadingUpLoadFiles}
             >
@@ -256,7 +256,7 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
                                     >
                                         <Select
                                             placeholder='Seleccione un estado'
-                                            disabled={(isPatient) || !areaId || !specialintId || readonly}
+                                            disabled={(userRole?.role.name == 'especialista') ? false : (isPatient) || !areaId || !specialintId || readonly}
                                             options={AppointmentStatusOptions}
                                         />
                                     </Form.Item>
@@ -301,8 +301,8 @@ const AppointmentFormView: FC<{ readonly: boolean }> = ({ readonly=false }) => {
                     }
                     <Col span={24}>
                         <Form.Item style={{ marginTop: '10px' }}>
-                            {!readonly && <Button type="primary" htmlType="submit" loading={isLoading}>
-                                {!id ? "Crear cita" : "Guardar cita"}
+                            {(userRole?.role.name != 'especialista' ? !readonly : true) && <Button type="primary" htmlType="submit" loading={isLoading}>
+                                {!id ? "Crear cita" : userRole?.role.name == 'especialista' ? 'Completar cita' : "Guardar cita"}
                             </Button>}
                             <Button danger loading={isLoading} disabled={false} style={{ marginLeft: 8 }} onClick={() => navigate(PATHS.APPOINTMENTS)}>
                                 Cerrar

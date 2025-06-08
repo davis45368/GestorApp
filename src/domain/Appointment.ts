@@ -90,7 +90,7 @@ export class AppointmentModel {
             brand_id: appointment.brandId,
             patient_id: appointment.patientId,
             area_id: appointment.areaId,
-            date: appointment.date?.format('YYYY-MM-DDTHH:mm'),
+            date: appointment.date?.format('YYYY-MM-DD HH:mm'),
             specialint_id: appointment.specialintId,
             status: appointment.status,
             reason: appointment.reason,
