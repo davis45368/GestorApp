@@ -83,7 +83,6 @@ const AppointmentsListView: FC = () => {
 			title: "Fecha",
 			dataIndex: "fecha",
 			key: "fecha",
-			render: (date: string) => dayjs(date).format("DD/MM/YYYY HH:mm"),
 		},
 		{
 			title: "Estado",

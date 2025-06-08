@@ -25,7 +25,7 @@ export class ImplementationAppointmentRepository {
     }
 
     async getById(appointmentId: string) {
-        const response = await axios.get<{ data: AppointmentDTO }>(this.baseUrl+appointmentId)
+        const response = await axios.get<{ data: AppointmentDTO }>(this.baseUrl+appointmentId+'?fields=*,files_ids.*')
 
         return {
             ...response,
@@ -34,11 +34,11 @@ export class ImplementationAppointmentRepository {
     }
 
     async create(data: Partial<Appointment>) {
-        return await axios.post(this.baseUrl, AppointmentModel.ToDTo(data))
+        return await axios.post<{ data: AppointmentDTO }>(this.baseUrl, AppointmentModel.ToDTo(data))
     }
 
     async update(data: Partial<Appointment>) {
-        return await axios.patch(this.baseUrl+data.id, AppointmentModel.ToDTo(data))
+        return await axios.patch<{ data: AppointmentDTO }>(this.baseUrl+data.id, AppointmentModel.ToDTo(data))
     }
 }
 

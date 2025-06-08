@@ -86,9 +86,8 @@ const AppointmentsListView = () => {
     },
     {
       title: "Fecha",
-      dataIndex: "fecha",
-      key: "fecha",
-      render: (date: string) => dayjs(date).format("DD/MM/YYYY HH:mm"),
+      dataIndex: "date",
+      key: "date",
     },
     {
       title: "Estado",
