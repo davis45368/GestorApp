@@ -10,13 +10,17 @@ export const handleErrorMutation = (error: unknown, message: string = '') => {
     const getMessageError = () => {
         if (!axiosError?.response?.data) return message;
 
-        const dataError = axiosError?.response?.data;
+        const errorData = axiosError.response.data as { errors: { message: string, extensions: { code: string } }[] }
     
-        if (dataError && typeof dataError === 'object') {
-            if ('message' in dataError) return dataError.message as string;
+        if (errorData.errors?.[0]?.extensions?.code == "INVALID_CREDENTIALS") {
+            return 'Usuario o contraseña incorrectos'
+        }
+
+        if (errorData && typeof errorData === 'object') {
+            if ('message' in errorData) return errorData.message as string;
         }
     
-        return typeof dataError === 'string' ? dataError : message;
+        return typeof errorData === 'string' ? errorData : message;
     };
 
     return getMessageError();
